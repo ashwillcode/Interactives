@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vowel Sound Sort</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:      #F5A623;
+      --gold-dark: #D4880A;
+      --coral:     #E8623F;
+      --coral-dark:#C44020;
+      --violet:    #7B5EA7;
+      --violet-dk: #5E4490;
+      --violet-sf: #F0EBFA;
+      --teal:      #3ABFBF;
+      --dark:      #1D1D2E;
+      --cream:     #FAF6F1;
+      --gray:      #EDE8E0;
+      --white:     #FFFFFF;
+    }
+
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      overflow-x: hidden;
+    }
+
+    /* ════ HEADER ════ */
+    .header {
+      width: 100%;
+      background: var(--white);
+      padding: 16px 28px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--gray);
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-icon {
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--coral) 100%);
+      border-radius: 14px;
+      width: 50px; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.5s;
+    }
+    .header-title {
+      font-family: 'Fredoka One', sans-serif;
+      font-size: 1.8rem;
+      color: var(--dark);
+      line-height: 1.1;
+    }
+    .header-sub { font-size: 0.95rem; color: #888; font-weight: 600; margin-top: 2px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .level-badge {
+      background: var(--violet-sf);
+      color: var(--violet-dk);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border: 1.5px solid rgba(123,94,167,0.2);
+    }
+    .header-badge {
+      background: var(--violet-sf);
+      color: var(--violet-dk);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border: 1.5px solid rgba(123,94,167,0.2);
+    }
+
+    /* ════ INSTRUCTIONS BAR ════ */
+    .instr-bar {
+      width: calc(100% - 32px);
+      max-width: 860px;
+      margin: 16px 0 8px;
+      padding: 14px 20px;
+      background: var(--white);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+      line-height: 1.5;
+      border: 1.5px solid var(--gray);
+    }
+    .instr-bar strong { color: var(--coral-dark); font-weight: 700; }
+    .instr-bar em { color: var(--violet-dk); font-style: normal; font-weight: 700; }
+
+    .speaker-btn {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none; cursor: pointer;
+      font-size: 1.25rem;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(245,166,35,0.35);
+      transition: transform 0.12s, background 0.15s;
+    }
+    .speaker-btn:hover  { background: var(--gold-dark); transform: scale(1.08); }
+    .speaker-btn:active { transform: scale(0.94); }
+    .speaker-btn.speaking { animation: pulse-speaker 0.5s ease infinite alternate; }
+    @keyframes pulse-speaker {
+      from { box-shadow: 0 2px 8px rgba(245,166,35,0.35); }
+      to   { box-shadow: 0 2px 22px rgba(245,166,35,0.8); }
+    }
+    .speaker-btn.attract { animation: attract-pulse 1.4s ease-in-out infinite; }
+    @keyframes attract-pulse {
+      0%,100% { transform: scale(1);    box-shadow: 0 2px 8px rgba(245,166,35,0.35); }
+      50%     { transform: scale(1.18); box-shadow: 0 2px 28px rgba(245,166,35,0.8); }
+    }
+
+    /* ════ PROGRESS STARS ════ */
+    .progress-wrap {
+      width: calc(100% - 32px);
+      max-width: 860px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--white);
+      border-radius: 16px;
+      border: 1.5px solid var(--gray);
+      margin-bottom: 4px;
+    }
+    .progress-label { display: none; }
+    .star-track { flex:1; display:flex; gap:4px; justify-content:center; flex-wrap:wrap; }
+    .star-pip {
+      font-size: 1.5rem; line-height: 1;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s;
+      filter: grayscale(1) opacity(0.25);
+    }
+    .star-pip.lit {
+      filter: grayscale(0) opacity(1) drop-shadow(0 1px 6px rgba(245,166,35,0.7));
+      transform: scale(1.25);
+    }
+
+    /* ════ GAME AREA ════ */
+    .game-area {
+      width: 100%; max-width: 920px;
+      padding: 16px 12px 28px;
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+    }
+
+    /* ════ TRAY ════ */
+    .tray-wrap {
+      background: var(--white); border: 1.5px solid var(--gray);
+      border-radius: 20px; padding: 20px 16px; width: 100%;
+    }
+    .tray-label {
+      text-align: center; font-size: 0.9rem; font-weight: 700;
+      color: #AAA; margin-bottom: 16px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .tray {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; min-height: 110px; align-items: flex-start;
+    }
+
+    /* ════ WORD CARD ════ */
+    .word-card {
+      width: 136px; min-width: 136px; max-width: 136px;
+      flex-shrink: 0;
+      background: var(--white); border-radius: 16px;
+      padding: 14px 10px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.12s, box-shadow 0.12s, opacity 0.25s;
+      position: relative;
+      border: 1.5px solid var(--gray);
+    }
+    .word-card:hover:not(.sorted):not(.selected) {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-color: var(--teal);
+    }
+    .word-card.selected {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px var(--teal), 0 8px 24px rgba(58,191,191,0.35);
+      transform: translateY(-6px) scale(1.04);
+    }
+    .word-card.sorted {
+      opacity: 0.45; pointer-events: none; filter: grayscale(0.5);
+      transition: opacity 0.35s ease, filter 0.35s ease;
+    }
+    .word-card.sorted::before {
+      content: '✓'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem; color: var(--teal); font-weight: 900;
+      background: rgba(255,255,255,0.6); border-radius: 14px; z-index: 2;
+    }
+    .card-emoji { font-size: 2.8rem; line-height: 1; }
+    .card-img {
+      width: 84px; height: 84px; border-radius: 10px;
+      object-fit: cover; display: block; border: none;
+    }
+    .card-img.img-loading {
+      background: linear-gradient(90deg, #f0e8dc 25%, #fffbf3 50%, #f0e8dc 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s ease infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .card-word {
+      font-family: 'Fredoka One', sans-serif; font-size: 1.5rem;
+      color: var(--dark); letter-spacing: 0.02em;
+    }
+
+    /* ════ BINS ROW ════ */
+    .bins-row {
+      display: flex; gap: 14px; width: 100%;
+      justify-content: center; flex-wrap: wrap;
+    }
+
+    /* ════ BIN ════ */
+    .bin {
+      flex: 1; min-width: 200px; max-width: 280px;
+      border-radius: 20px; border: 2px solid var(--bin-border);
+      background: var(--white); overflow: hidden;
+      display: flex; flex-direction: column; align-items: center;
+      transition: box-shadow 0.2s, transform 0.15s;
+      position: relative; min-height: 230px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    .bin.wrong-drop { animation: bin-wrong 0.4s ease; }
+    @keyframes bin-wrong {
+      0%,100% { transform: scale(1); }
+      25%      { transform: scale(1.03) rotate(-2deg); }
+      75%      { transform: scale(1.03) rotate(2deg); }
+    }
+    body.has-selection .bin:not(.drop-ready) {
+      animation: bin-ready 1.3s ease-in-out infinite;
+    }
+    .bin.drop-ready {
+      box-shadow: 0 0 0 3px var(--bin-color), 0 4px 20px rgba(0,0,0,0.12);
+      transform: scale(1.02) translateY(-2px);
+    }
+    @keyframes bin-ready {
+      0%,100% { box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+      50%     { box-shadow: 0 0 0 3px var(--bin-color), 0 6px 20px rgba(0,0,0,0.1); }
+    }
+    .word-card.wrong-shake { animation: card-shake 0.45s ease; }
+    @keyframes card-shake {
+      0%,100% { transform: translateX(0) rotate(0); }
+      20%     { transform: translateX(-9px) rotate(-3deg); }
+      40%     { transform: translateX(9px)  rotate(3deg); }
+      60%     { transform: translateX(-6px) rotate(-2deg); }
+      80%     { transform: translateX(6px)  rotate(2deg); }
+    }
+    .word-card.idle-pulse { animation: idle-bounce 0.65s cubic-bezier(0.34,1.56,0.64,1) 2; }
+    @keyframes idle-bounce {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-10px); }
+    }
+
+    .bin-header {
+      width: 100%; background: var(--bin-color);
+      padding: 14px 12px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+    }
+    .bin-vowel-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 16px; padding: 6px 18px 8px;
+      transition: background 0.15s, transform 0.12s;
+    }
+    .bin-vowel-btn:hover  { background: rgba(255,255,255,0.28); transform: scale(1.06); }
+    .bin-vowel-btn:active { transform: scale(0.96); }
+    .bin-vowel {
+      font-family: 'Fredoka One', sans-serif; font-size: 4.2rem;
+      color: #fff; line-height: 1;
+    }
+    .bin-vowel-tap {
+      font-size: 0.75rem; font-weight: 700;
+      color: rgba(255,255,255,0.92);
+      text-transform: uppercase; letter-spacing: 0.07em;
+    }
+    .bin-label {
+      font-size: 0.9rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: rgba(255,255,255,0.95);
+    }
+    .bin-example {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.25); color: #fff;
+      font-size: 1rem; font-weight: 700;
+      padding: 5px 14px; border-radius: 99px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+    }
+
+    .bin-drop-area {
+      width: 100%; flex: 1; min-height: 120px;
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 12px 10px;
+      align-content: flex-start; justify-content: center;
+      transition: background 0.2s;
+    }
+    .bin.drop-ready .bin-drop-area { background: rgba(255,255,255,0.5); }
+
+    .bin-chip {
+      background: #fff; border-radius: 16px;
+      padding: 10px 8px 12px; width: 100px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      animation: chipin 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+      box-shadow: 0 3px 0 #DDD0B8, 0 5px 14px rgba(0,0,0,0.12);
+      border: 2px solid #F0E8D8; position: relative;
+    }
+    .bin-chip::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 6px; border-radius: 0 0 14px 14px; background: #DDD0B8;
+    }
+    .bin-chip img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; }
+    .bin-chip-emoji { font-size: 2rem; line-height: 1; }
+    .bin-chip-word {
+      font-family: 'Fredoka One', sans-serif; font-size: 1.1rem; color: var(--dark);
+    }
+    @keyframes chipin {
+      0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+      60%  { transform: scale(1.15) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .bin-count { display: none; }
+    .bin-empty-hint {
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--bin-color); opacity: 0.5;
+      text-align: center; padding: 16px 8px;
+      pointer-events: none; line-height: 1.6;
+    }
+    .bin-empty-hint.hidden { display: none; }
+
+    /* ════ TOAST ════ */
+    .toast {
+      position: fixed; top: 90px; left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--dark); color: #fff;
+      padding: 10px 22px; border-radius: 99px;
+      font-size: 0.95rem; font-weight: 700;
+      pointer-events: none; z-index: 8888; opacity: 0;
+      transition: opacity 0.2s, transform 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.correct { background: var(--teal); }
+    .toast.wrong   { background: var(--coral); }
+
+    /* ════ STAR POP ════ */
+    .star-pop {
+      position: fixed; font-size: 1.8rem;
+      pointer-events: none; z-index: 9000;
+      animation: starpop 0.9s ease forwards;
+    }
+    @keyframes starpop {
+      0%   { transform: scale(0) translateY(0) rotate(-20deg); opacity: 1; }
+      50%  { transform: scale(1.3) translateY(-40px) rotate(10deg); opacity: 1; }
+      100% { transform: scale(0.6) translateY(-80px) rotate(0deg); opacity: 0; }
+    }
+
+    /* ════ CELEBRATION ════ */
+    .celebration {
+      display: none; position: fixed; inset: 0;
+      z-index: 10000;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: 20px; padding: 40px;
+      transition: background 0.6s;
+    }
+    .celebration.show { display: flex; }
+    .cel-emoji {
+      font-size: 6rem;
+      animation: wobble 0.9s ease infinite alternate;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.18));
+    }
+    @keyframes wobble {
+      from { transform: rotate(-10deg) scale(1); }
+      to   { transform: rotate(10deg) scale(1.12); }
+    }
+    .cel-title {
+      font-family: 'Fredoka One', sans-serif; font-size: 3rem;
+      color: #fff; text-shadow: 0 4px 16px rgba(0,0,0,0.15); line-height: 1.1;
+    }
+    .cel-sub {
+      font-size: 1.05rem; font-weight: 700;
+      color: rgba(255,255,255,0.95); max-width: 380px; line-height: 1.55;
+    }
+    .cel-stats { display: flex; gap: 14px; margin-top: 4px; }
+    .cel-stat {
+      background: rgba(255,255,255,0.22); color: #fff;
+      padding: 12px 24px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      border: 1.5px solid rgba(255,255,255,0.35); backdrop-filter: blur(4px);
+    }
+    .cel-stat span {
+      font-family: 'Fredoka One', sans-serif; font-size: 2rem;
+      display: block; line-height: 1.1;
+    }
+    .cel-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .play-again {
+      margin-top: 8px; padding: 16px 44px; border-radius: 999px;
+      background: #fff; color: var(--coral-dark);
+      font-family: 'Fredoka One', sans-serif; font-size: 1.3rem;
+      border: none; cursor: pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.15), 0 10px 28px rgba(0,0,0,0.18);
+      transition: transform 0.1s, box-shadow 0.1s; letter-spacing: 0.02em;
+    }
+    .play-again:hover  { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,0.15), 0 14px 32px rgba(0,0,0,0.2); }
+    .play-again:active { transform: translateY(3px);  box-shadow: 0 3px 0 rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.14); }
+    .btn-next {
+      background: var(--gold) !important; color: #fff !important;
+    }
+
+    .confetti {
+      position: fixed; border-radius: 2px;
+      pointer-events: none; z-index: 10001;
+      animation: confettifall linear forwards;
+    }
+    @keyframes confettifall {
+      0%   { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(600deg); opacity: 0.1; }
+    }
+
+    /* ════ LEVEL TRANSITION FLASH ════ */
+    .level-flash {
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .level-flash.go { opacity: 1; }
+
+    @media (max-width: 640px) {
+      .header { padding: 14px 16px 28px; }
+      .header-title { font-size: 1.3rem; }
+      .header-icon { width: 44px; height: 44px; font-size: 1.8rem; }
+      .instr-bar { font-size: 0.85rem; }
+      .bins-row { gap: 10px; }
+      .bin { min-width: 90px; }
+      .bin-vowel { font-size: 2.6rem; }
+      .bin-header { padding: 10px 8px; }
+      .word-card { width: 96px; }
+      .card-img { width: 64px; height: 64px; }
+      .card-word { font-size: 1rem; }
+      .star-pip { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-icon" id="header-icon">🔤</div>
+    <div>
+      <div class="header-title">Vowel Sound Sort</div>
+      <div class="header-sub" id="header-sub">Short a · Long a</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="level-badge" id="level-badge">Round 1 of 2</div>
+    <div class="header-badge">Kindergarten ELA</div>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="instr-bar">
+  <button class="speaker-btn" id="speaker-btn" title="Hear instructions">🔊</button>
+  <span id="instr-text">
+    <strong>Tap a card</strong> to hear the word. Listen for the sound in the <em>middle</em>.
+    Then <strong>tap a bin</strong> — <em>Short a</em> or <em>Long a</em>!
+  </span>
+  <span id="el-dot" style="display:none"></span>
+  <span id="el-status-text" style="display:none"></span>
+  <input id="el-key-input" style="display:none">
+  <button id="el-connect-btn" style="display:none"></button>
+  <select id="el-voice-select" style="display:none"></select>
+  <select id="voice-select" style="display:none"></select>
+</div>
+
+<!-- PROGRESS STARS -->
+<div class="progress-wrap">
+  <span class="progress-label" id="progress-label">0 / 6</span>
+  <div class="star-track" id="star-track"></div>
+</div>
+
+<!-- GAME -->
+<div class="game-area">
+  <div class="tray-wrap">
+    <div class="tray-label">👇 Tap a card, then tap the matching bin below</div>
+    <div class="tray" id="tray"></div>
+  </div>
+  <div class="bins-row" id="bins-row"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CELEBRATION -->
+<div class="celebration" id="celebration">
+  <div class="cel-emoji" id="cel-emoji">🌟</div>
+  <div class="cel-title" id="cel-title">You sorted them all!</div>
+  <div class="cel-sub" id="cel-sub">Amazing job listening for those sounds!<br>You are a phonics superstar!</div>
+  <div class="cel-stats">
+    <div class="cel-stat"><span id="stat-time">—</span>seconds</div>
+    <div class="cel-stat"><span>6</span>words sorted</div>
+    <div class="cel-stat"><span id="stat-tries">—</span>tries</div>
+  </div>
+  <div class="cel-buttons" id="cel-buttons"></div>
+</div>
+
+<!-- LEVEL FLASH -->
+<div class="level-flash" id="level-flash"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   CONFIG
+════════════════════════════════════════════ */
+const ELEVENLABS_API_KEY = 'sk_39f94d46b1e1bdcb0d54a8a90c8fbfa88f7d82a4cbd7bb6a';
+
+function imgUrl(prompt, seed) {
+  const encoded = encodeURIComponent(
+    `${prompt}, cute children's book illustration, flat vector art, ` +
+    `bright cheerful colors, thick outlines, white background, simple, no text, no letters`
+  );
+  return `https://image.pollinations.ai/prompt/${encoded}?width=200&height=200&nologo=true&model=flux&seed=${seed}`;
+}
+
+/* ════════════════════════════════════════════
+   LEVEL DATA
+════════════════════════════════════════════ */
+const LEVELS = [
+  {
+    subtitle:      'Short a · Long a',
+    iconGradient:  'linear-gradient(135deg, #F5A623 0%, #E8623F 100%)',
+    celebGradient: 'linear-gradient(145deg, #F5A623 0%, #E8623F 55%, #7B5EA7 100%)',
+    celebEmoji:    '🌟',
+    celebTitle:    'Round 1 done!',
+    celebSub:      'Great listening! Ready for the next sound?',
+    instrText:     '<strong>Tap a card</strong> to hear the word. Listen for the sound in the <em>middle</em>. Then <strong>tap a bin</strong> — <em>Short a</em> or <em>Long a</em>!',
+    instructions:  `<speak>Tap a card<break time="400ms"/>to hear the word.<break time="700ms"/>Listen for the sound in the middle.<break time="800ms"/>Then tap the right bin.<break time="800ms"/>Short A,<break time="400ms"/>like cat.<break time="700ms"/>Or long A,<break time="400ms"/>like cake.<break time="800ms"/>Let's try it!</speak>`,
+    binLabel:      (v) => v === 'la' ? 'long a' : 'short a',
+    wrongFeedback: (word) => `<speak>Let's try again.<break time="600ms"/>Tap the card to hear<break time="300ms"/>${word.word}.<break time="700ms"/>Does the middle sound say<break time="400ms"/><phoneme alphabet="ipa" ph="æ">a</phoneme><break time="400ms"/>or<break time="400ms"/><phoneme alphabet="ipa" ph="eɪ">a</phoneme>?</speak>`,
+    wrongToast:    `Listen for the middle sound — does it say /ă/ or /ā/?`,
+    words: [
+      { id:'w0', word:'cat',  emoji:'🐱', vowel:'a',  imgSrc: imgUrl('a cute orange cat sitting',    101) },
+      { id:'w1', word:'map',  emoji:'🗺️', vowel:'a',  imgSrc: imgUrl('a colorful treasure map',      102) },
+      { id:'w2', word:'bag',  emoji:'🎒', vowel:'a',  imgSrc: imgUrl('a colorful backpack bag',       103) },
+      { id:'w3', word:'cake', emoji:'🎂', vowel:'la', imgSrc: imgUrl('a birthday cake with candles', 201) },
+      { id:'w4', word:'game', emoji:'🎲', vowel:'la', imgSrc: imgUrl('a colorful board game dice',   202) },
+      { id:'w5', word:'wave', emoji:'🌊', vowel:'la', imgSrc: imgUrl('a big blue ocean wave',        203) },
+    ],
+    bins: [
+      { vowel:'a',  label:'Short a', display:'a', color:'#F5A623', borderColor:'#F5C76A', example:'🧢 cap',
+        phrasing: `<speak><phoneme alphabet="ipa" ph="æ">a</phoneme>.<break time="1000ms"/>Short A<break time="400ms"/>sounds like<break time="400ms"/><phoneme alphabet="ipa" ph="æ">a</phoneme>.<break time="900ms"/>Like in cap.<break time="700ms"/>Or mat.<break time="700ms"/>Or pan.</speak>` },
+      { vowel:'la', label:'Long a',  display:'ā', color:'#E8623F', borderColor:'#F0A08A', example:'🌧️ rain',
+        phrasing: `<speak><phoneme alphabet="ipa" ph="eɪ">a</phoneme>.<break time="1000ms"/>Long A<break time="400ms"/>says its name.<break time="700ms"/><phoneme alphabet="ipa" ph="eɪ">a</phoneme>.<break time="900ms"/>Like in face.<break time="700ms"/>Or tape.<break time="700ms"/>Or rain.</speak>` },
+    ],
+  },
+  {
+    subtitle:      'Short i · Long i',
+    iconGradient:  'linear-gradient(135deg, #3ABFBF 0%, #7B5EA7 100%)',
+    celebGradient: 'linear-gradient(145deg, #3ABFBF 0%, #7B5EA7 55%, #1D1D2E 100%)',
+    celebEmoji:    '🏆',
+    celebTitle:    'You sorted them all!',
+    celebSub:      'Amazing job listening for every sound!<br>You are a phonics superstar!',
+    instrText:     '<strong>Tap a card</strong> to hear the word. Listen for the sound in the <em>middle</em>. Then <strong>tap a bin</strong> — <em>Short i</em> or <em>Long i</em>!',
+    instructions:  `<speak>Tap a card<break time="400ms"/>to hear the word.<break time="700ms"/>Listen for the sound in the middle.<break time="800ms"/>Then tap the right bin.<break time="800ms"/>Short I,<break time="400ms"/>like pig.<break time="700ms"/>Or long I,<break time="400ms"/>like bike.<break time="800ms"/>Let's try it!</speak>`,
+    binLabel:      (v) => v === 'li' ? 'long i' : 'short i',
+    wrongFeedback: (word) => `<speak>Let's try again.<break time="600ms"/>Tap the card to hear<break time="300ms"/>${word.word}.<break time="700ms"/>Does the middle sound say<break time="400ms"/><phoneme alphabet="ipa" ph="ɪ">i</phoneme><break time="400ms"/>or<break time="400ms"/><phoneme alphabet="ipa" ph="aɪ">i</phoneme>?</speak>`,
+    wrongToast:    `Listen for the middle sound — does it say /ĭ/ or /ī/?`,
+    words: [
+      { id:'w0', word:'pig',  emoji:'🐷', vowel:'i',  imgSrc: imgUrl('a cute pink pig oinking',         301) },
+      { id:'w1', word:'sit',  emoji:'🪑', vowel:'i',  imgSrc: imgUrl('a child sitting on a red chair',  302) },
+      { id:'w2', word:'fin',  emoji:'🐟', vowel:'i',  imgSrc: imgUrl('a fish with a bright blue fin',   303) },
+      { id:'w3', word:'bike', emoji:'🚲', vowel:'li', imgSrc: imgUrl('a colorful red bicycle',          401) },
+      { id:'w4', word:'pine', emoji:'🌲', vowel:'li', imgSrc: imgUrl('a tall green pine tree',          402) },
+      { id:'w5', word:'kite', emoji:'🪁', vowel:'li', imgSrc: imgUrl('a colorful kite flying in sky',   403) },
+    ],
+    bins: [
+      { vowel:'i',  label:'Short i', display:'i', color:'#3ABFBF', borderColor:'#7DD9D9', example:'🐟 fish',
+        phrasing: `<speak><phoneme alphabet="ipa" ph="ɪ">i</phoneme>.<break time="1000ms"/>Short I<break time="400ms"/>sounds like<break time="400ms"/><phoneme alphabet="ipa" ph="ɪ">i</phoneme>.<break time="900ms"/>Like in fish.<break time="700ms"/>Or hill.<break time="700ms"/>Or tip.</speak>` },
+      { vowel:'li', label:'Long i',  display:'ī', color:'#7B5EA7', borderColor:'#B09CCE', example:'🥧 pie',
+        phrasing: `<speak><phoneme alphabet="ipa" ph="aɪ">i</phoneme>.<break time="1000ms"/>Long I<break time="400ms"/>says its name.<break time="700ms"/><phoneme alphabet="ipa" ph="aɪ">i</phoneme>.<break time="900ms"/>Like in pie.<break time="700ms"/>Or ride.<break time="700ms"/>Or night.</speak>` },
+    ],
+  },
+];
+
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+let currentLevel = 0;
+let sorted       = 0;
+let totalTries   = 0;
+let startTime    = null;
+let selectedCard = null;
+let toastTimer   = null;
+let _idleTimer   = null;
+
+function level() { return LEVELS[currentLevel]; }
+function binVowels() { return level().bins.map(b => b.vowel); }
+
+function resetIdleTimer() {
+  clearTimeout(_idleTimer);
+  _idleTimer = setTimeout(() => {
+    const unsorted = [...document.querySelectorAll('.word-card:not(.sorted)')];
+    if (!unsorted.length) return;
+    const card = unsorted[Math.floor(Math.random() * unsorted.length)];
+    card.classList.remove('idle-pulse');
+    void card.offsetWidth;
+    card.classList.add('idle-pulse');
+    card.addEventListener('animationend', () => card.classList.remove('idle-pulse'), { once: true });
+    resetIdleTimer();
+  }, 20000);
+}
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+function init() {
+  const lv = level();
+  sorted = 0; totalTries = 0; selectedCard = null;
+  document.body.classList.remove('has-selection');
+  startTime = Date.now();
+
+  // Update header
+  document.getElementById('header-sub').textContent    = lv.subtitle;
+  document.getElementById('header-icon').style.background = lv.iconGradient;
+  document.getElementById('level-badge').textContent   = `Round ${currentLevel + 1} of ${LEVELS.length}`;
+
+  // Update instruction text
+  document.getElementById('instr-text').innerHTML = lv.instrText;
+
+  document.getElementById('celebration').classList.remove('show');
+  document.getElementById('progress-label').textContent = `0 / ${lv.words.length}`;
+
+  buildStarTrack();
+  buildBins();
+  buildTray();
+  initVoices();
+  resetIdleTimer();
+  document.getElementById('speaker-btn').classList.add('attract');
+}
+
+function startLevel(idx) {
+  currentLevel = idx;
+  // Flash transition
+  const lv = LEVELS[idx];
+  const flash = document.getElementById('level-flash');
+  flash.style.background = lv.celebGradient;
+  flash.classList.add('go');
+  setTimeout(() => {
+    flash.classList.remove('go');
+    document.getElementById('celebration').classList.remove('show');
+    init();
+    setTimeout(speakInstructions, 600);
+  }, 300);
+}
+
+/* ════════════════════════════════════════════
+   BUILD STARS
+════════════════════════════════════════════ */
+function buildStarTrack() {
+  const track = document.getElementById('star-track');
+  track.innerHTML = '';
+  for (let i = 0; i < level().words.length; i++) {
+    const s = document.createElement('span');
+    s.className = 'star-pip'; s.textContent = '⭐';
+    track.appendChild(s);
+  }
+}
+
+/* ════════════════════════════════════════════
+   BUILD BINS
+════════════════════════════════════════════ */
+function buildBins() {
+  const row = document.getElementById('bins-row');
+  row.innerHTML = '';
+  level().bins.forEach(b => {
+    const bin = document.createElement('div');
+    bin.className = 'bin';
+    bin.id = `bin-${b.vowel}`;
+    bin.dataset.vowel = b.vowel;
+    bin.style.cssText = `--bin-color:${b.color}; --bin-border:${b.borderColor};`;
+    bin.innerHTML = `
+      <div class="bin-header">
+        <button class="bin-vowel-btn" aria-label="Hear ${b.label} sound">
+          <div class="bin-vowel">${b.display}</div>
+          <div class="bin-vowel-tap">🔊 tap to hear</div>
+        </button>
+        <div class="bin-label">${b.label}</div>
+        <div class="bin-example">${b.example}</div>
+      </div>
+      <div class="bin-drop-area" id="drop-${b.vowel}">
+        <div class="bin-empty-hint" id="hint-${b.vowel}">Tap a word,<br>then tap here</div>
+      </div>
+      <div class="bin-count" id="count-${b.vowel}"></div>
+    `;
+    row.appendChild(bin);
+  });
+}
+
+/* ════════════════════════════════════════════
+   BUILD TRAY
+════════════════════════════════════════════ */
+function buildTray() {
+  const tray = document.getElementById('tray');
+  tray.innerHTML = '';
+  [...level().words].sort(() => Math.random() - 0.5).forEach(w => tray.appendChild(makeCard(w)));
+}
+
+function makeCard(w) {
+  const el = document.createElement('div');
+  el.className = 'word-card'; el.id = `card-${w.id}`; el.dataset.id = w.id;
+  el.innerHTML = `
+    <img class="card-img img-loading" src="${w.imgSrc}" alt="${w.word}"
+         onload="this.classList.remove('img-loading')"
+         onerror="this.outerHTML='<div class=\\'card-emoji\\'>${w.emoji}</div>'">
+    <div class="card-word">${w.word}</div>
+  `;
+  el.addEventListener('click', e => onCardClick(e, w, el));
+  return el;
+}
+
+/* ════════════════════════════════════════════
+   CLICK — SELECT CARD
+════════════════════════════════════════════ */
+function onCardClick(e, word, el) {
+  if (el.classList.contains('sorted')) return;
+  e.stopPropagation();
+  resetIdleTimer();
+  document.getElementById('speaker-btn').classList.remove('attract');
+
+  if (selectedCard && selectedCard.el === el) {
+    speak(`<speak>${word.word}</speak>`);
+    showToast(`"${word.word}" — now tap a bin!`, 'neutral');
+    return;
+  }
+  clearSelection();
+  selectedCard = { word, el };
+  el.classList.add('selected');
+  document.body.classList.add('has-selection');
+  speak(`<speak>${word.word}</speak>`);
+  showToast(`"${word.word}" — now tap the right bin!`, 'neutral');
+}
+
+/* ════════════════════════════════════════════
+   CLEAR SELECTION
+════════════════════════════════════════════ */
+function clearSelection() {
+  if (selectedCard) { selectedCard.el.classList.remove('selected'); selectedCard = null; }
+  document.body.classList.remove('has-selection');
+  document.querySelectorAll('.bin').forEach(b => b.classList.remove('drop-ready'));
+}
+
+/* ════════════════════════════════════════════
+   CORRECT DROP
+════════════════════════════════════════════ */
+function correctDrop(word, sourceEl, vowel) {
+  sourceEl.classList.remove('selected');
+  sourceEl.classList.add('sorted');
+  clearSelection();
+
+  const chip = document.createElement('div');
+  chip.className = 'bin-chip';
+  chip.innerHTML = `
+    <img src="${word.imgSrc}" alt="${word.word}"
+         onerror="this.outerHTML='<div class=\\'bin-chip-emoji\\'>${word.emoji}</div>'">
+    <div class="bin-chip-word">${word.word}</div>
+  `;
+  document.getElementById(`drop-${vowel}`).appendChild(chip);
+
+  sorted++;
+  const hint = document.getElementById(`hint-${vowel}`);
+  if (hint) hint.classList.add('hidden');
+
+  const count = document.getElementById(`drop-${vowel}`).querySelectorAll('.bin-chip').length;
+  const max   = level().words.filter(w => w.vowel === vowel).length;
+  const countEl = document.getElementById(`count-${vowel}`);
+  countEl.textContent = count === max ? `All ${max} sorted! ✓` : `${count} of ${max} sorted`;
+  countEl.classList.add('has-words');
+
+  document.getElementById('progress-label').textContent = `${sorted} / ${level().words.length}`;
+  const pips = document.querySelectorAll('.star-pip');
+  if (pips[sorted - 1]) pips[sorted - 1].classList.add('lit');
+
+  showStarPop(sourceEl);
+
+  const binLabel = level().binLabel(vowel);
+  const praise = [
+    `<speak>Yes!<break time="300ms"/>${word.word}<break time="300ms"/>has the ${binLabel} sound!</speak>`,
+    `<speak>Great job!<break time="300ms"/>${word.word}<break time="300ms"/>${binLabel}!</speak>`,
+    `<speak>You got it!<break time="300ms"/>You heard the ${binLabel} in<break time="200ms"/>${word.word}!</speak>`,
+    `<speak>Perfect!<break time="300ms"/>${word.word}<break time="300ms"/>goes in the ${binLabel} bin!</speak>`,
+  ];
+  speak(praise[Math.floor(Math.random() * praise.length)]);
+  showToast(`✓  ${word.word}  →  ${binLabel}`, 'correct');
+
+  if (sorted === level().words.length) setTimeout(celebrate, 700);
+}
+
+/* ════════════════════════════════════════════
+   WRONG DROP
+════════════════════════════════════════════ */
+function wrongDrop(word, sourceEl, vowel) {
+  const bin = document.getElementById(`bin-${vowel}`);
+  bin.classList.add('wrong-drop');
+  setTimeout(() => bin.classList.remove('wrong-drop'), 450);
+
+  sourceEl.classList.add('wrong-shake');
+  sourceEl.addEventListener('animationend', () => sourceEl.classList.remove('wrong-shake'), { once: true });
+
+  speak(level().wrongFeedback(word));
+  showToast(level().wrongToast, 'wrong');
+}
+
+/* ════════════════════════════════════════════
+   CELEBRATE
+════════════════════════════════════════════ */
+function celebrate() {
+  const lv = level();
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+  document.getElementById('stat-time').textContent  = elapsed;
+  document.getElementById('stat-tries').textContent = totalTries;
+
+  // Update celebration appearance
+  const cel = document.getElementById('celebration');
+  cel.style.background = lv.celebGradient;
+  document.getElementById('cel-emoji').textContent    = lv.celebEmoji;
+  document.getElementById('cel-title').textContent    = lv.celebTitle;
+  document.getElementById('cel-sub').innerHTML        = lv.celebSub;
+
+  // Build buttons
+  const btns = document.getElementById('cel-buttons');
+  btns.innerHTML = '';
+
+  const replayBtn = document.createElement('button');
+  replayBtn.className = 'play-again';
+  replayBtn.textContent = 'Play Again ↺';
+  replayBtn.onclick = () => { cel.classList.remove('show'); init(); };
+  btns.appendChild(replayBtn);
+
+  if (currentLevel < LEVELS.length - 1) {
+    const nextLv = LEVELS[currentLevel + 1];
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'play-again btn-next';
+    nextBtn.textContent = `Next: ${nextLv.subtitle} →`;
+    nextBtn.onclick = () => startLevel(currentLevel + 1);
+    btns.appendChild(nextBtn);
+    speak(`<speak>Amazing!<break time="500ms"/>You sorted all six words!<break time="600ms"/>Ready for round two?</speak>`);
+  } else {
+    const startBtn = document.createElement('button');
+    startBtn.className = 'play-again btn-next';
+    startBtn.textContent = '← Play from Start';
+    startBtn.onclick = () => startLevel(0);
+    btns.appendChild(startBtn);
+    speak(`<speak>You sorted all six words!<break time="500ms"/>You are a phonics superstar!<break time="400ms"/>Amazing work!</speak>`);
+  }
+
+  launchConfetti();
+  cel.classList.add('show');
+}
+
+function launchConfetti() {
+  const colors = ['#F3B51B','#E87D66','#A178C9','#5CBABA','#82D1A8','#FFA9AC','#FBD76A'];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti';
+    p.style.cssText = `
+      left: ${Math.random()*100}vw; top: -20px;
+      width: ${8 + Math.random()*10}px; height: ${8 + Math.random()*10}px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius: ${Math.random()>0.5 ? '50%' : '2px'};
+      animation-duration: ${1.8 + Math.random()*2.2}s;
+      animation-delay: ${Math.random()*0.9}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 5000);
+  }
+}
+
+/* ════════════════════════════════════════════
+   UI HELPERS
+════════════════════════════════════════════ */
+function showStarPop(nearEl) {
+  const rect = nearEl.getBoundingClientRect();
+  const star = document.createElement('div');
+  star.className = 'star-pop';
+  star.textContent = ['⭐','🌟','✨','💫'][Math.floor(Math.random()*4)];
+  star.style.left = (rect.left + rect.width/2 - 20) + 'px';
+  star.style.top  = rect.top + 'px';
+  document.body.appendChild(star);
+  setTimeout(() => star.remove(), 950);
+}
+
+function showToast(msg, type = 'neutral') {
+  const t = document.getElementById('toast');
+  if (toastTimer) clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+/* ════════════════════════════════════════════
+   SPEECH — Browser TTS (fallback)
+════════════════════════════════════════════ */
+let _selectedVoice = null;
+let _speechRate    = 0.60;
+
+const PREFERRED_VOICE_NAMES = [
+  'Google US English','Nicky','Flo (English (United States))','Reed (English (United States))',
+  'Eddy (English (United States))','Sandy (English (United States))','Google UK English Female',
+  'Karen','Samantha','Microsoft Aria Online (Natural) - English (United States)',
+];
+
+function getAllEnglishVoices() { return window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en')); }
+function autoPickVoice(voices) {
+  for (const name of PREFERRED_VOICE_NAMES) { const v = voices.find(v => v.name === name); if (v) return v; }
+  return voices.filter(v => !v.default)[0] || voices[0] || null;
+}
+function populateVoicePicker() {
+  const voices = getAllEnglishVoices();
+  const select = document.getElementById('voice-select');
+  if (!voices.length) return;
+  select.innerHTML = '';
+  voices.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = v.name + (v.default ? ' ★' : '');
+    select.appendChild(opt);
+  });
+  const best = autoPickVoice(voices);
+  if (best) { _selectedVoice = best; select.value = voices.indexOf(best); }
+}
+function initVoices() {
+  if (window.speechSynthesis.getVoices().length > 0) populateVoicePicker();
+  else window.speechSynthesis.onvoiceschanged = populateVoicePicker;
+}
+function speakBrowser(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const plain = text.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  const utt = new SpeechSynthesisUtterance(plain);
+  utt.lang = 'en-US'; utt.rate = _speechRate; utt.pitch = 1.0; utt.volume = 1;
+  if (_selectedVoice) utt.voice = _selectedVoice;
+  const btn = document.getElementById('speaker-btn');
+  btn.classList.add('speaking');
+  utt.onend = utt.onerror = () => btn.classList.remove('speaking');
+  window.speechSynthesis.speak(utt);
+}
+
+/* ════════════════════════════════════════════
+   SPEECH — ElevenLabs TTS
+════════════════════════════════════════════ */
+let _elConnected = false;
+let _elApiKey    = '';
+let _elVoiceId   = '';
+let _elAudio     = null;
+
+function elConnect(apiKey) {
+  _elApiKey = apiKey; _elConnected = true;
+  _elVoiceId = '21m00Tcm4TlvDq8ikWAM';
+  document.getElementById('el-dot').classList.add('connected');
+  document.getElementById('el-status-text').textContent = 'ElevenLabs — ready';
+}
+
+async function speakElevenLabs(text) {
+  if (_elAudio) { _elAudio.pause(); _elAudio = null; }
+  const btn = document.getElementById('speaker-btn');
+  btn.classList.add('speaking');
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${_elVoiceId}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': _elApiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text, model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.60, similarity_boost: 0.80 }
+      })
+    });
+    if (!res.ok) throw new Error(`EL ${res.status}`);
+    const audio = new Audio(URL.createObjectURL(await res.blob()));
+    audio.playbackRate = 0.82;
+    audio.preservesPitch = true;
+    _elAudio = audio;
+    audio.onended = audio.onerror = () => {
+      btn.classList.remove('speaking');
+      URL.revokeObjectURL(audio.src);
+      if (_elAudio === audio) _elAudio = null;
+    };
+    audio.play();
+  } catch (err) {
+    console.error('ElevenLabs error:', err);
+    btn.classList.remove('speaking');
+    speakBrowser(text);
+  }
+}
+
+function speak(text) {
+  if (_elConnected && _elVoiceId) speakElevenLabs(text);
+  else speakBrowser(text);
+}
+
+function speakInstructions() { speak(level().instructions); }
+
+/* ════════════════════════════════════════════
+   EVENTS
+════════════════════════════════════════════ */
+document.getElementById('speaker-btn').addEventListener('click', () => {
+  document.getElementById('speaker-btn').classList.remove('attract');
+  resetIdleTimer();
+  speakInstructions();
+});
+
+// Bin interactions — event delegation on the bins row
+document.getElementById('bins-row').addEventListener('click', e => {
+  const bin = e.target.closest('.bin');
+  if (!bin) return;
+
+  // Vowel button plays the bin sound
+  if (e.target.closest('.bin-vowel-btn')) {
+    e.stopPropagation();
+    const vowel = bin.dataset.vowel;
+    const binCfg = level().bins.find(b => b.vowel === vowel);
+    if (binCfg) speak(binCfg.phrasing);
+    return;
+  }
+
+  // Place selected card
+  if (!selectedCard) return;
+  resetIdleTimer();
+  totalTries++;
+  const { word, el } = selectedCard;
+  const vowel = bin.dataset.vowel;
+  if (vowel === word.vowel) correctDrop(word, el, vowel);
+  else wrongDrop(word, el, vowel);
+});
+
+document.getElementById('bins-row').addEventListener('mouseover', e => {
+  const bin = e.target.closest('.bin');
+  if (bin && selectedCard) bin.classList.add('drop-ready');
+});
+document.getElementById('bins-row').addEventListener('mouseout', e => {
+  const bin = e.target.closest('.bin');
+  if (bin) bin.classList.remove('drop-ready');
+});
+
+// Click elsewhere deselects
+document.addEventListener('click', e => {
+  if (!selectedCard) return;
+  if (!e.target.closest('.word-card') && !e.target.closest('.bin')) clearSelection();
+});
+
+window.addEventListener('load', () => {
+  if (ELEVENLABS_API_KEY) {
+    document.getElementById('el-key-input').value = ELEVENLABS_API_KEY;
+    elConnect(ELEVENLABS_API_KEY);
+  }
+  init();
+});
+</script>
+</body>
+</html>

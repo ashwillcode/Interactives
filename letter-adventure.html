@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Letter Adventure · StrongMind Homeschool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sm-gold:   #F5A623;
+      --sm-amber:  #E8890E;
+      --sm-purple: #7B4CB8;
+      --sm-teal:   #0D9488;
+      --cream:     #FAF7F2;
+      --dark:      #1C1917;
+      --dot:       #EDE8DF;
+    }
+
+    body {
+      font-family: 'Nunito Sans', Arial, sans-serif;
+      background-color: var(--cream);
+      background-image: radial-gradient(circle, var(--dot) 1.5px, transparent 1.5px);
+      background-size: 26px 26px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* ═══ HEADER ═══ */
+    .header {
+      width: 100%;
+      background: linear-gradient(120deg, #F5C03A 0%, #F5A623 45%, #E8890E 100%);
+      padding: 16px 28px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 0 0 28px 28px;
+      box-shadow: 0 6px 24px rgba(245,166,35,0.38);
+      transition: background 0.6s;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-icon {
+      font-size: 2rem;
+      background: rgba(255,255,255,0.25);
+      width: 52px; height: 52px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s;
+    }
+    .header-title { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1.1; text-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    .header-sub   { font-size: 0.78rem; color: rgba(255,255,255,0.88); font-weight: 700; margin-top: 2px; letter-spacing: 0.04em; }
+    .header-brand { font-size: 0.7rem; font-weight: 800; color: rgba(255,255,255,0.9); letter-spacing: 0.08em; text-transform: uppercase; }
+    .score-badge {
+      background: var(--sm-purple);
+      color: #fff;
+      font-size: 1rem; font-weight: 900;
+      padding: 8px 18px;
+      border-radius: 99px;
+      border: 2px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 3px 12px rgba(123,76,184,0.4);
+    }
+    .score-badge.bump { animation: scorebump 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes scorebump { 0%{transform:scale(1)} 50%{transform:scale(1.35)} 100%{transform:scale(1)} }
+
+    /* Theme progress dots */
+    .theme-dots {
+      display: flex; gap: 6px; align-items: center;
+      padding: 0 6px;
+    }
+    .theme-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: all 0.3s;
+    }
+    .theme-dot.done  { background: rgba(255,255,255,0.90); }
+    .theme-dot.active { background: #fff; width: 20px; border-radius: 4px; }
+
+    /* ═══ UNIFIED MISSION BAR (spotlight + speaker merged) ═══ */
+    .mission-bar {
+      width: calc(100% - 32px); max-width: 700px;
+      margin: 14px 0 4px;
+      padding: 12px 16px 12px 12px;
+      background: linear-gradient(135deg, #6D3DAF 0%, #9333EA 100%);
+      border-radius: 22px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 4px 20px rgba(123,76,184,0.38);
+    }
+    .speaker-btn {
+      flex-shrink: 0;
+      width: 58px; height: 58px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.18);
+      border: 2px solid rgba(255,255,255,0.30);
+      color: #fff; font-size: 1.6rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.12s, background 0.15s;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12);
+    }
+    .speaker-btn:hover  { background: rgba(255,255,255,0.28); transform: scale(1.07); }
+    .speaker-btn:active { transform: scale(0.93); }
+    .speaker-btn.speaking { animation: pulse-btn 0.55s ease infinite alternate; }
+    .speaker-btn.needs-attention { animation: speaker-glow 1.3s ease-in-out infinite alternate; }
+    @keyframes pulse-btn {
+      from { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12); }
+      to   { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12), 0 0 0 8px rgba(255,255,255,0.25); }
+    }
+    @keyframes speaker-glow {
+      from { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12); background: rgba(255,255,255,0.18); }
+      to   { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12), 0 0 0 8px rgba(255,255,255,0.10); background: rgba(255,255,255,0.32); }
+    }
+    .mission-inner {
+      flex: 1; display: flex; flex-direction: column; gap: 4px;
+    }
+    .mission-top {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .mission-label {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 800;
+      color: rgba(255,255,255,0.80);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .letter-spotlight-char {
+      font-family: 'Poppins', sans-serif;
+      font-size: 3.2rem; font-weight: 900; color: #fff;
+      min-width: 56px; text-align: center; line-height: 1;
+      text-shadow: 0 3px 14px rgba(0,0,0,0.22);
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .letter-spotlight-sound {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 800;
+      color: rgba(255,255,255,0.80);
+      background: rgba(255,255,255,0.15);
+      padding: 4px 12px; border-radius: 99px; white-space: nowrap;
+    }
+    @keyframes letterPop {
+      0%   { transform: scale(0.6); opacity: 0; }
+      70%  { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .letter-spotlight-char.pop { animation: letterPop 0.45s cubic-bezier(0.34,1.56,0.64,1); }
+    /* Progress pips */
+    .progress-pips { display: flex; gap: 7px; padding-left: 2px; }
+    .pip {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: rgba(255,255,255,0.28);
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .pip.filled {
+      background: #fff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.65);
+      transform: scale(1.25);
+    }
+
+    /* ═══ GAME AREA ═══ */
+    .game-area {
+      width: 100%; max-width: 720px;
+      padding: 8px 16px 32px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 16px;
+    }
+    @keyframes flashIn { 0%{opacity:0;transform:scale(0.92)} 100%{opacity:1;transform:scale(1)} }
+    .game-area.new-round { animation: flashIn 0.4s ease; }
+
+    /* ═══ ITEM TRAY ═══ */
+    .item-tray {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid #EBE5DC;
+      border-radius: 20px;
+      padding: 18px 16px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .item-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      justify-content: center; align-items: flex-end;
+    }
+
+    /* ═══ ITEM WRAP ═══ */
+    .item-wrap {
+      display: flex; flex-direction: column;
+      align-items: center;
+      cursor: grab; touch-action: none;
+      transition: transform 0.15s, filter 0.15s, max-width 0.45s 0.15s, margin 0.45s 0.15s;
+      max-width: 200px;
+      animation: item-enter 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes item-enter {
+      0%   { transform: scale(0.45) rotate(-12deg); opacity: 0; }
+      65%  { transform: scale(1.12) rotate(3deg);   opacity: 1; }
+      82%  { transform: scale(0.95) rotate(-1deg); }
+      100% { transform: scale(1)    rotate(0);      opacity: 1; }
+    }
+    .item-wrap:nth-child(1) { animation-delay:   0ms; }
+    .item-wrap:nth-child(2) { animation-delay:  70ms; }
+    .item-wrap:nth-child(3) { animation-delay: 140ms; }
+    .item-wrap:nth-child(4) { animation-delay: 210ms; }
+    .item-wrap:nth-child(5) { animation-delay: 280ms; }
+    .item-wrap:hover:not(.matched):not(.dragging-source) {
+      transform: translateY(-8px) scale(1.06);
+      filter: drop-shadow(0 14px 18px rgba(0,0,0,0.20));
+    }
+    .item-wrap.matched {
+      opacity: 0; pointer-events: none;
+      transform: scale(0.4) translateY(-30px);
+      max-width: 0 !important; overflow: hidden;
+      margin: 0 !important; padding: 0 !important;
+      transition: opacity 0.3s, transform 0.3s, max-width 0.45s 0.15s, margin 0.45s 0.15s;
+    }
+    .item-wrap.dragging-source { opacity: 0.25; transform: scale(0.9); }
+    .item-wrap.selected:not(.matched) {
+      transform: translateY(-14px) scale(1.10);
+      filter: drop-shadow(0 0 14px rgba(123,76,184,0.75)) drop-shadow(0 8px 18px rgba(0,0,0,0.22));
+    }
+    @keyframes tap-wrong-shake {
+      0%,100% { transform: translateY(0) scale(1)    translateX(0); }
+      20%      { transform: translateY(0) scale(1.04) translateX(-12px); }
+      40%      { transform: translateY(0) scale(1.04) translateX(12px); }
+      60%      { transform: translateY(0) scale(1.02) translateX(-7px); }
+      80%      { transform: translateY(0) scale(1.02) translateX(7px); }
+    }
+    .item-wrap.tap-wrong { animation: tap-wrong-shake 0.5s ease !important; }
+    .item-svg-box {
+      display: block;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.20));
+      overflow: visible;
+    }
+
+    /* ═══ DRAG GHOST ═══ */
+    .drag-ghost {
+      position: fixed; pointer-events: none;
+      z-index: 9999;
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.28));
+    }
+    .drag-ghost svg {
+      transform: rotate(4deg) scale(1.06);
+      transform-origin: center bottom;
+    }
+    @keyframes wrongshake {
+      0%,100% { transform: translateX(0) rotate(4deg) scale(1.06); }
+      20%      { transform: translateX(-14px) rotate(-2deg) scale(1.06); }
+      40%      { transform: translateX(14px) rotate(6deg) scale(1.06); }
+      60%      { transform: translateX(-9px) rotate(1deg) scale(1.06); }
+      80%      { transform: translateX(9px) rotate(5deg) scale(1.06); }
+    }
+    .drag-ghost.ghost-wrong svg { animation: wrongshake 0.5s ease; }
+
+    /* ═══ TARGET SCENE ═══ */
+    .target-scene {
+      display: flex; flex-direction: column;
+      align-items: center; position: relative;
+    }
+    .target-scene.overlay-mode {
+      display: block; position: relative;
+    }
+
+    /* ═══ DROP ZONE ═══ */
+    .drop-zone {
+      border: 3.5px dashed rgba(123,76,184,0.45);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      position: relative; z-index: 10;
+    }
+    @keyframes dz-beacon {
+      0%, 100% { border-color: rgba(123,76,184,0.40); box-shadow: 0 0 0 0 rgba(123,76,184,0.30); background: rgba(123,76,184,0.04); }
+      50%       { border-color: rgba(123,76,184,0.85); box-shadow: 0 0 0 12px rgba(123,76,184,0);  background: rgba(123,76,184,0.11); }
+    }
+    .drop-zone:not(.has-item):not(.drag-over) { animation: dz-beacon 2s ease-in-out infinite; }
+    .target-scene.overlay-mode .drop-zone {
+      position: absolute; z-index: 20;
+    }
+    .drop-zone.drag-over {
+      border-color: var(--sm-purple);
+      background: rgba(123,76,184,0.07);
+    }
+    .drop-hint {
+      font-size: 0.75rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #C4B0A0; pointer-events: none;
+    }
+    .drop-zone.has-item .drop-hint { display: none; }
+    /* Once filled, erase the dashed ring entirely so the scene reads as a unified graphic */
+    .drop-zone.has-item {
+      border-color: transparent !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      animation: none !important;
+    }
+
+    /* ═══ STACKED ITEM (placed on target) ═══ */
+    .stacked-item {
+      position: absolute;
+      pointer-events: none; z-index: 25;
+    }
+    @keyframes itemland {
+      0%   { opacity:0; transform: translateX(-50%) translateY(-30px) scale(1.15); }
+      60%  { opacity:1; transform: translateX(-50%) translateY(6px) scale(0.96); }
+      100% { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+    /* Flower petal round 1 — swings in to rotate(30deg) around bottom-center pivot */
+    @keyframes itemland-rotate-1 {
+      0%   { opacity:0; transform: rotate(0deg) scale(1.3); }
+      60%  { opacity:1; transform: rotate(33deg) scale(0.95); }
+      100% { opacity:1; transform: rotate(30deg) scale(1); }
+    }
+    /* Flower petal round 2 — swings in to rotate(-30deg) */
+    @keyframes itemland-rotate-2 {
+      0%   { opacity:0; transform: rotate(0deg) scale(1.3); }
+      60%  { opacity:1; transform: rotate(-33deg) scale(0.95); }
+      100% { opacity:1; transform: rotate(-30deg) scale(1); }
+    }
+    @keyframes itemland-center {
+      0%   { opacity:0; transform: translate(-50%,-50%) scale(1.2); }
+      60%  { opacity:1; transform: translate(-50%,-50%) scale(0.95); }
+      100% { opacity:1; transform: translate(-50%,-50%) scale(1); }
+    }
+
+    /* ═══ TOAST ═══ */
+    .toast {
+      position: fixed; top: 88px; left: 50%;
+      transform: translateX(-50%) translateY(-28px);
+      padding: 13px 28px; border-radius: 99px;
+      font-size: 1.05rem; font-weight: 800;
+      pointer-events: none; z-index: 8888;
+      opacity: 0;
+      transition: opacity 0.22s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+      color: #fff;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.correct { background: linear-gradient(120deg, #0D9488, #059669); }
+    .toast.wrong   { background: linear-gradient(120deg, #E8890E, #DC6803); }
+
+    /* ═══ STAR POP ═══ */
+    .star-pop {
+      position: fixed; font-size: 2rem;
+      pointer-events: none; z-index: 9000;
+      animation: starpop 0.9s ease forwards;
+    }
+    @keyframes starpop {
+      0%   { transform: scale(0) translateY(0) rotate(-20deg); opacity:1; }
+      50%  { transform: scale(1.4) translateY(-45px) rotate(12deg); opacity:1; }
+      100% { transform: scale(0.5) translateY(-90px); opacity:0; }
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed; pointer-events: none;
+      z-index: 10001; animation: confettifall linear forwards;
+    }
+    @keyframes confettifall {
+      0%   { transform: translateY(-30px) rotate(0deg); opacity:1; }
+      100% { transform: translateY(105vh) rotate(640deg); opacity:0.05; }
+    }
+
+    /* Theme transition flash */
+    .theme-change-banner {
+      position: fixed; inset: 0; z-index: 9500;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #7B4CB8 0%, #A855F7 100%);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .theme-change-banner.show { opacity: 1; pointer-events: all; }
+    .theme-change-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.2rem; font-weight: 900;
+      color: #fff; text-align: center;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.2);
+      animation: bannerBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes bannerBounce {
+      0%   { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+
+    /* ═══ LETTERS COLLECTED STRIP ═══ */
+    .letters-strip {
+      width: calc(100% - 32px); max-width: 700px;
+      display: flex; flex-wrap: wrap; gap: 6px;
+      align-items: center;
+      margin: 0 0 6px;
+      min-height: 34px;
+    }
+    .strip-label {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.80rem; font-weight: 800;
+      color: #9D8E80; white-space: nowrap;
+    }
+    .strip-empty {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.80rem; font-weight: 700;
+      color: #C4B4A4; font-style: italic;
+    }
+    .letter-chip {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem; font-weight: 900;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.55);
+      border: 2px solid #EBE5DC;
+      color: #C4B0A0;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .letter-chip.earned {
+      background: linear-gradient(135deg, #0D9488, #059669);
+      border-color: #0D9488;
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(13,148,136,0.35);
+      transform: scale(1.12);
+    }
+    @keyframes chipEarn {
+      0%   { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+      70%  { transform: scale(1.25) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1.12) rotate(0); opacity: 1; }
+    }
+    .letter-chip.earn-anim { animation: chipEarn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+    /* ═══ STREAK BADGE ═══ */
+    .streak-badge {
+      position: fixed; top: 86px; right: 14px; z-index: 8500;
+      background: linear-gradient(135deg, #F97316, #EF4444);
+      color: #fff; font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem; font-weight: 900;
+      padding: 7px 14px; border-radius: 99px;
+      box-shadow: 0 4px 16px rgba(239,68,68,0.48);
+      pointer-events: none;
+      animation: streak-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes streak-pop {
+      0%   { transform: scale(0.4) rotate(-12deg); opacity: 0; }
+      70%  { transform: scale(1.22) rotate(4deg);  opacity: 1; }
+      100% { transform: scale(1)   rotate(0);      opacity: 1; }
+    }
+
+    /* ═══ WORD FLASH ═══ */
+    .word-flash {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      background: linear-gradient(135deg, #0D9488, #059669);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.9rem; font-weight: 900;
+      padding: 18px 36px;
+      border-radius: 24px;
+      box-shadow: 0 16px 48px rgba(13,148,136,0.45);
+      pointer-events: none; z-index: 9100;
+      opacity: 0;
+      text-align: center;
+      transition: opacity 0.25s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .word-flash.show {
+      opacity: 1; transform: translate(-50%, -50%) scale(1);
+    }
+    .word-flash-word { letter-spacing: 0.06em; }
+    .word-flash-emoji { font-size: 2.4rem; display: block; margin-bottom: 4px; }
+
+    /* ═══ LETTER HINT OVERLAY (wrong answer scaffold) ═══ */
+    .letter-hint-overlay {
+      position: fixed; inset: 0; z-index: 9200;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.45);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .letter-hint-overlay.show { opacity: 1; }
+    .letter-hint-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 28px 40px;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.30);
+      animation: bannerBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .letter-hint-label {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 800;
+      color: #E8890E; text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .letter-hint-big {
+      font-family: 'Poppins', sans-serif;
+      font-size: 5rem; font-weight: 900;
+      color: #7B4CB8; line-height: 1;
+    }
+    .letter-hint-sound {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      color: #6B7280; margin-top: 8px;
+    }
+    .hint-dismiss-btn {
+      margin-top: 18px;
+      background: var(--sm-purple); color: #fff;
+      font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 800;
+      border: none; border-radius: 14px;
+      padding: 10px 28px; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(123,76,184,0.38);
+      transition: transform 0.12s;
+    }
+    .hint-dismiss-btn:active { transform: scale(0.94); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header" id="header">
+  <div class="header-left">
+    <div class="header-icon" id="header-icon">🍦</div>
+    <div>
+      <div class="header-brand">⚡ StrongMind Homeschool</div>
+      <div class="header-title" id="header-title">Letter Adventure</div>
+      <div class="header-sub" id="header-sub">Letter Recognition · Kindergarten ELA</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="theme-dots" id="theme-dots"></div>
+    <div class="score-badge" id="score-badge">⭐ 0</div>
+  </div>
+</div>
+
+<!-- MISSION BAR (unified instruction + spotlight) -->
+<div class="mission-bar" id="mission-bar">
+  <button class="speaker-btn needs-attention" id="speaker-btn" title="Tap to hear instructions">🔊</button>
+  <div class="mission-inner">
+    <div class="mission-top">
+      <span class="mission-label">Tap 🔊 to hear which letter to find!</span>
+      <span id="spotlight-char" style="display:none"></span>
+      <span id="spotlight-sound" style="display:none"></span>
+    </div>
+    <div class="progress-pips" id="progress-pips"></div>
+  </div>
+</div>
+
+<!-- LETTERS COLLECTED -->
+<div class="letters-strip" id="letters-strip"></div>
+
+<!-- GAME -->
+<div class="game-area" id="game-area">
+  <div class="item-tray">
+    <div class="item-row" id="item-row"></div>
+  </div>
+  <div class="target-scene" id="target-scene">
+    <div class="drop-zone" id="drop-zone">
+      <span class="drop-hint" id="drop-hint">Drop here!</span>
+    </div>
+    <div class="target-svg-wrap" id="target-svg-wrap"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- THEME CHANGE BANNER -->
+<div class="theme-change-banner" id="theme-banner">
+  <div class="theme-change-text" id="theme-banner-text">🎉 Amazing! Let's try something new!</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   LETTER POOL
+═══════════════════════════════════════════════════════════ */
+const LETTER_POOL = [
+  { upper:'A', lower:'a', distractors:['H','V','R','e','o','u'], words:['apple','ant','arm','art','axe'] },
+  { upper:'B', lower:'b', distractors:['D','P','R','d','p','q'], words:['ball','bear','book','bus','bird'] },
+  { upper:'C', lower:'c', distractors:['G','O','S','g','o','s'], words:['cat','car','cup','corn','coat'] },
+  { upper:'D', lower:'d', distractors:['B','P','O','b','p','q'], words:['dog','duck','door','drum','deer'] },
+  { upper:'E', lower:'e', distractors:['F','B','P','f','b','L'], words:['egg','elf','ear','end','elk'] },
+  { upper:'F', lower:'f', distractors:['E','T','P','e','t','L'], words:['frog','fish','fox','fan','fly'] },
+  { upper:'G', lower:'g', distractors:['C','O','Q','c','o','q'], words:['goat','game','gift','grass','girl'] },
+  { upper:'H', lower:'h', distractors:['N','M','K','n','m','k'], words:['hat','hen','hill','hot','home'] },
+  { upper:'L', lower:'l', distractors:['J','T','F','j','t','f'], words:['log','lip','leaf','lamp','lion'] },
+  { upper:'M', lower:'m', distractors:['N','W','H','n','w','r'], words:['moon','mouse','milk','map','mop'] },
+  { upper:'N', lower:'n', distractors:['M','H','Z','m','h','u'], words:['nest','nose','nut','nail','net'] },
+  { upper:'P', lower:'p', distractors:['D','B','R','d','b','q'], words:['pig','pan','pop','pie','pup'] },
+  { upper:'R', lower:'r', distractors:['P','B','N','p','b','n'], words:['rat','rock','rope','rain','ring'] },
+  { upper:'S', lower:'s', distractors:['C','G','Z','c','g','z'], words:['sun','sock','snake','star','soup'] },
+  { upper:'T', lower:'t', distractors:['F','L','I','f','j','i'], words:['top','tree','truck','tiger','ten'] },
+  { upper:'W', lower:'w', distractors:['M','V','N','m','v','n'], words:['web','worm','wagon','wig','well'] },
+  { upper:'J', lower:'j', distractors:['I','L','T','i','l','t'], words:['jar','jet','jump','jam','joy'] },
+  { upper:'K', lower:'k', distractors:['X','R','H','x','r','h'], words:['key','kite','king','kick','knot'] },
+  { upper:'O', lower:'o', distractors:['C','G','Q','c','g','q'], words:['owl','otter','orange','ocean','oak'] },
+  { upper:'U', lower:'u', distractors:['V','W','N','v','w','n'], words:['umbrella','up','uncle','under','us'] },
+  { upper:'V', lower:'v', distractors:['U','W','Y','u','w','y'], words:['van','vine','vest','vote','vase'] },
+];
+
+const LETTER_SOUNDS = {
+  A:'/a/', B:'/b/', C:'/k/', D:'/d/', E:'/e/', F:'/f/', G:'/g/',
+  H:'/h/', J:'/j/', K:'/k/', L:'/l/', M:'/m/', N:'/n/', O:'/o/',
+  P:'/p/', Q:'/kw/', R:'/r/', S:'/s/', T:'/t/', U:'/u/', V:'/v/',
+  W:'/w/', X:'/ks/', Y:'/y/', Z:'/z/'
+};
+
+const WORD_EMOJI = {
+  apple:'🍎', ant:'🐜', arm:'💪', art:'🎨', axe:'🪓',
+  ball:'⚽', bear:'🐻', book:'📚', bus:'🚌', bird:'🐦',
+  cat:'🐱', car:'🚗', cup:'☕', corn:'🌽', coat:'🧥',
+  dog:'🐶', duck:'🦆', door:'🚪', drum:'🥁', deer:'🦌',
+  egg:'🥚', elf:'🧝', ear:'👂', end:'🔚', elk:'🦌',
+  frog:'🐸', fish:'🐟', fox:'🦊', fan:'💨', fly:'🪰',
+  goat:'🐐', game:'🎮', gift:'🎁', grass:'🌿', girl:'👧',
+  hat:'🎩', hen:'🐔', hill:'⛰️', hot:'🔥', home:'🏠',
+  jar:'🫙', jet:'✈️', jump:'🦘', jam:'🍓', joy:'😊',
+  key:'🔑', kite:'🪁', king:'👑', kick:'⚽', knot:'🪢',
+  log:'🪵', lip:'💋', leaf:'🍃', lamp:'💡', lion:'🦁',
+  moon:'🌕', mouse:'🐭', milk:'🥛', map:'🗺️', mop:'🧹',
+  nest:'🪺', nose:'👃', nut:'🥜', nail:'🔨', net:'🕸️',
+  owl:'🦉', otter:'🦦', orange:'🍊', ocean:'🌊', oak:'🌳',
+  pig:'🐷', pan:'🍳', pop:'🍾', pie:'🥧', pup:'🐶',
+  rat:'🐭', rock:'🪨', rope:'🪢', rain:'🌧️', ring:'💍',
+  sun:'☀️', sock:'🧦', snake:'🐍', star:'⭐', soup:'🥣',
+  top:'🪀', tree:'🌲', truck:'🚛', tiger:'🐯', ten:'🔟',
+  umbrella:'☂️', up:'⬆️', uncle:'👨', under:'⬇️', us:'👥',
+  van:'🚐', vine:'🍇', vest:'🦺', vote:'🗳️', vase:'🏺',
+  web:'🕸️', worm:'🪱', wagon:'🛒', wig:'👱', well:'💧'
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SVG ITEM BUILDERS
+═══════════════════════════════════════════════════════════ */
+
+/* ── 1. ICE CREAM SCOOP ── */
+function makeScoopPath(w, h) {
+  const cx = w/2, cy = h*0.49, r = w*0.455, k = r*0.5523;
+  return `M ${cx},${cy-r} C ${cx+k},${cy-r} ${cx+r},${cy-k} ${cx+r},${cy} C ${cx+r},${cy+k} ${cx+k},${cy+r} ${cx},${cy+r} C ${cx-k},${cy+r} ${cx-r},${cy+k} ${cx-r},${cy} C ${cx-r},${cy-k} ${cx-k},${cy-r} ${cx},${cy-r} Z`;
+}
+function makeIceCreamSVG(item, w, h, fs) {
+  const path = makeScoopPath(w, h);
+  const u = `ic${Math.random().toString(36).slice(2,6)}`;
+  const cx = w/2, cy = h*0.49;
+  const bumps = [[.38,.28],[.60,.23],[.72,.38],[.26,.46],[.62,.52],[.42,.66],[.76,.28],[.68,.66],[.48,.78],[.22,.62],[.82,.55],[.52,.36]].map(([bx,by])=>`<circle cx="${(w*bx).toFixed(1)}" cy="${(h*by).toFixed(1)}" r="${(w*0.038).toFixed(1)}" fill="${item.light}" opacity="0.22"/>`).join('');
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="g1-${u}" cx="32%" cy="26%" r="74%"><stop offset="0%" stop-color="${item.light}"/><stop offset="40%" stop-color="${item.color}"/><stop offset="100%" stop-color="${item.dark}"/></radialGradient>
+    <radialGradient id="g2-${u}" cx="50%" cy="96%" r="54%"><stop offset="0%" stop-color="${item.dark}" stop-opacity="0.60"/><stop offset="100%" stop-color="${item.dark}" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g3-${u}" cx="92%" cy="44%" r="26%"><stop offset="0%" stop-color="${item.light}" stop-opacity="0.32"/><stop offset="100%" stop-color="${item.light}" stop-opacity="0"/></radialGradient>
+    <clipPath id="c-${u}"><path d="${path}"/></clipPath>
+  </defs>
+  <path d="${path}" fill="url(#g1-${u})"/>
+  <path d="${path}" fill="url(#g2-${u})"/>
+  <path d="${path}" fill="url(#g3-${u})"/>
+  <g clip-path="url(#c-${u})">${bumps}</g>
+  <ellipse cx="${(w*.31).toFixed(1)}" cy="${(h*.24).toFixed(1)}" rx="${(w*.22).toFixed(1)}" ry="${(h*.16).toFixed(1)}" fill="rgba(255,255,255,0.30)" transform="rotate(-20 ${(w*.31).toFixed(1)} ${(h*.24).toFixed(1)})" clip-path="url(#c-${u})"/>
+  <ellipse cx="${(w*.25).toFixed(1)}" cy="${(h*.14).toFixed(1)}" rx="${(w*.082).toFixed(1)}" ry="${(h*.054).toFixed(1)}" fill="rgba(255,255,255,0.80)" clip-path="url(#c-${u})"/>
+  <ellipse cx="${(w*.23).toFixed(1)}" cy="${(h*.12).toFixed(1)}" rx="${(w*.030).toFixed(1)}" ry="${(h*.020).toFixed(1)}" fill="rgba(255,255,255,0.95)" clip-path="url(#c-${u})"/>
+  <text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins,Arial,sans-serif" font-weight="800" font-size="${fs}" fill="rgba(255,255,255,0.96)" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,0.38))">${item.letter}</text>
+</svg>`;
+}
+
+/* ── 2. FLOWER PETAL ── */
+function makePetalPath(w, h) {
+  const cx = w/2;
+  return `M ${cx},${h*.97} C ${cx-w*.22},${h*.84} ${cx-w*.46},${h*.66} ${cx-w*.46},${h*.43} C ${cx-w*.46},${h*.16} ${cx-w*.25},${h*.01} ${cx},${h*.01} C ${cx+w*.25},${h*.01} ${cx+w*.46},${h*.16} ${cx+w*.46},${h*.43} C ${cx+w*.46},${h*.66} ${cx+w*.22},${h*.84} ${cx},${h*.97} Z`;
+}
+function makeFlowerPetalSVG(item, w, h, fs) {
+  const path = makePetalPath(w, h);
+  const u = `fp${Math.random().toString(36).slice(2,6)}`;
+  const cx = w/2;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="pg-${u}" cx="50%" cy="32%" r="70%"><stop offset="0%" stop-color="${item.light}"/><stop offset="42%" stop-color="${item.color}"/><stop offset="100%" stop-color="${item.dark}"/></radialGradient>
+    <radialGradient id="ps-${u}" cx="50%" cy="97%" r="50%"><stop offset="0%" stop-color="${item.dark}" stop-opacity="0.55"/><stop offset="100%" stop-color="${item.dark}" stop-opacity="0"/></radialGradient>
+    <clipPath id="pc-${u}"><path d="${path}"/></clipPath>
+  </defs>
+  <path d="${path}" fill="url(#pg-${u})"/>
+  <path d="${path}" fill="url(#ps-${u})"/>
+  <g clip-path="url(#pc-${u})" fill="none" stroke-linecap="round">
+    <path d="M ${cx},${h*.94} C ${cx},${h*.68} ${cx},${h*.38} ${cx},${h*.05}" stroke="${item.dark}" stroke-width="1.2" opacity="0.28"/>
+    <path d="M ${cx},${h*.84} C ${cx+w*.12},${h*.62} ${cx+w*.20},${h*.38} ${cx+w*.16},${h*.10}" stroke="${item.dark}" stroke-width="0.9" opacity="0.20"/>
+    <path d="M ${cx},${h*.84} C ${cx-w*.12},${h*.62} ${cx-w*.20},${h*.38} ${cx-w*.16},${h*.10}" stroke="${item.dark}" stroke-width="0.9" opacity="0.20"/>
+  </g>
+  <ellipse cx="${cx}" cy="${h*.28}" rx="${w*.20}" ry="${h*.12}" fill="rgba(255,255,255,0.32)" clip-path="url(#pc-${u})"/>
+  <ellipse cx="${cx-w*.08}" cy="${h*.17}" rx="${w*.07}" ry="${h*.042}" fill="rgba(255,255,255,0.82)" clip-path="url(#pc-${u})"/>
+  <text x="${cx}" y="${h*.42}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins,Arial,sans-serif" font-weight="800" font-size="${fs}" fill="rgba(255,255,255,0.96)" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,0.36))">${item.letter}</text>
+</svg>`;
+}
+
+/* ── 3. STAR ── */
+function makeStarPath(w, h) {
+  const cx = w/2, cy = h*0.50, R = w*0.46, r = R*0.42;
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const a = (i * Math.PI / 5) - Math.PI / 2;
+    const rad = i % 2 === 0 ? R : r;
+    pts.push(`${(cx + rad*Math.cos(a)).toFixed(2)},${(cy + rad*Math.sin(a)).toFixed(2)}`);
+  }
+  return `M ${pts.join(' L ')} Z`;
+}
+function makeStarSVG(item, w, h, fs) {
+  const path = makeStarPath(w, h);
+  const u = `st${Math.random().toString(36).slice(2,6)}`;
+  const cx = w/2, cy = h*0.50;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="sg1-${u}" cx="38%" cy="32%" r="70%"><stop offset="0%" stop-color="${item.light}"/><stop offset="45%" stop-color="${item.color}"/><stop offset="100%" stop-color="${item.dark}"/></radialGradient>
+    <radialGradient id="sg2-${u}" cx="50%" cy="50%" r="40%"><stop offset="0%" stop-color="${item.light}" stop-opacity="0.50"/><stop offset="100%" stop-color="${item.light}" stop-opacity="0"/></radialGradient>
+    <filter id="sf-${u}"><feGaussianBlur stdDeviation="2.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+    <clipPath id="sc-${u}"><path d="${path}"/></clipPath>
+  </defs>
+  <path d="${path}" fill="url(#sg1-${u})" filter="url(#sf-${u})"/>
+  <path d="${path}" fill="url(#sg2-${u})"/>
+  <g clip-path="url(#sc-${u})" stroke="${item.light}" stroke-linecap="round" fill="none" opacity="0.30">
+    <line x1="${cx}" y1="${cy-h*.38}" x2="${cx}" y2="${cy+h*.38}" stroke-width="1.2"/>
+    <line x1="${cx-w*.34}" y1="${cy}" x2="${cx+w*.34}" y2="${cy}" stroke-width="1.2"/>
+    <line x1="${cx-w*.24}" y1="${cy-h*.24}" x2="${cx+w*.24}" y2="${cy+h*.24}" stroke-width="0.9"/>
+    <line x1="${cx+w*.24}" y1="${cy-h*.24}" x2="${cx-w*.24}" y2="${cy+h*.24}" stroke-width="0.9"/>
+  </g>
+  <ellipse cx="${(cx-w*.08).toFixed(1)}" cy="${(cy-h*.14).toFixed(1)}" rx="${(w*.07).toFixed(1)}" ry="${(h*.05).toFixed(1)}" fill="rgba(255,255,255,0.88)" clip-path="url(#sc-${u})"/>
+  <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins,Arial,sans-serif" font-weight="800" font-size="${fs}" fill="rgba(255,255,255,0.96)" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,0.42))">${item.letter}</text>
+</svg>`;
+}
+
+/* ── 4. LADYBUG ── */
+function makeLadybugSVG(item, w, h, fs) {
+  const u = `lb${Math.random().toString(36).slice(2,6)}`;
+  const cx = w / 2, cy = h / 2;
+  const rx = w * 0.42, ry = h * 0.38;
+  const hry = h * 0.17, hrx = w * 0.38;
+  const hcy = cy - ry + hry * 0.7;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="lbg-${u}" cx="36%" cy="28%" r="72%">
+      <stop offset="0%" stop-color="${item.light}"/>
+      <stop offset="48%" stop-color="${item.color}"/>
+      <stop offset="100%" stop-color="${item.dark}"/>
+    </radialGradient>
+    <radialGradient id="lbh-${u}" cx="40%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="#444"/>
+      <stop offset="100%" stop-color="#111"/>
+    </radialGradient>
+    <radialGradient id="lbgl-${u}" cx="30%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.22)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <filter id="lbf-${u}" x="-12%" y="-10%" width="124%" height="125%">
+      <feDropShadow dx="1" dy="4" stdDeviation="5" flood-color="rgba(0,0,0,0.28)"/>
+    </filter>
+    <clipPath id="lbc-${u}"><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"/></clipPath>
+  </defs>
+  <!-- Body -->
+  <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#lbg-${u})" filter="url(#lbf-${u})"/>
+  <!-- Center seam line -->
+  <line x1="${cx}" y1="${(cy - ry + 4).toFixed(1)}" x2="${cx}" y2="${(cy + ry - 4).toFixed(1)}" stroke="${item.dark}" stroke-width="2.2" opacity="0.55" clip-path="url(#lbc-${u})"/>
+  <!-- Spots (3 pairs) clipped to body -->
+  <g clip-path="url(#lbc-${u})" fill="${item.dark}" opacity="0.72">
+    <circle cx="${(cx + w * 0.17).toFixed(1)}" cy="${(cy - h * 0.08).toFixed(1)}" r="${(w * 0.085).toFixed(1)}"/>
+    <circle cx="${(cx - w * 0.17).toFixed(1)}" cy="${(cy - h * 0.08).toFixed(1)}" r="${(w * 0.085).toFixed(1)}"/>
+    <circle cx="${(cx + w * 0.19).toFixed(1)}" cy="${(cy + h * 0.10).toFixed(1)}" r="${(w * 0.070).toFixed(1)}"/>
+    <circle cx="${(cx - w * 0.19).toFixed(1)}" cy="${(cy + h * 0.10).toFixed(1)}" r="${(w * 0.070).toFixed(1)}"/>
+    <circle cx="${(cx + w * 0.14).toFixed(1)}" cy="${(cy + h * 0.25).toFixed(1)}" r="${(w * 0.055).toFixed(1)}"/>
+    <circle cx="${(cx - w * 0.14).toFixed(1)}" cy="${(cy + h * 0.25).toFixed(1)}" r="${(w * 0.055).toFixed(1)}"/>
+  </g>
+  <!-- Body gloss overlay -->
+  <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#lbgl-${u})"/>
+  <!-- Head (black) -->
+  <ellipse cx="${cx}" cy="${hcy.toFixed(1)}" rx="${hrx}" ry="${hry}" fill="url(#lbh-${u})"/>
+  <!-- Head shine -->
+  <ellipse cx="${(cx - hrx * 0.22).toFixed(1)}" cy="${(hcy - hry * 0.28).toFixed(1)}" rx="${(hrx * 0.28).toFixed(1)}" ry="${(hry * 0.22).toFixed(1)}" fill="rgba(255,255,255,0.30)" transform="rotate(-20 ${(cx - hrx * 0.22).toFixed(1)} ${(hcy - hry * 0.28).toFixed(1)})"/>
+  <!-- Eyes -->
+  <circle cx="${(cx - w * 0.12).toFixed(1)}" cy="${(hcy - hry * 0.1).toFixed(1)}" r="${(w * 0.045).toFixed(1)}" fill="rgba(255,255,255,0.85)"/>
+  <circle cx="${(cx + w * 0.12).toFixed(1)}" cy="${(hcy - hry * 0.1).toFixed(1)}" r="${(w * 0.045).toFixed(1)}" fill="rgba(255,255,255,0.85)"/>
+  <circle cx="${(cx - w * 0.12).toFixed(1)}" cy="${(hcy - hry * 0.1).toFixed(1)}" r="${(w * 0.022).toFixed(1)}" fill="#111"/>
+  <circle cx="${(cx + w * 0.12).toFixed(1)}" cy="${(hcy - hry * 0.1).toFixed(1)}" r="${(w * 0.022).toFixed(1)}" fill="#111"/>
+  <!-- Antennae -->
+  <path d="M ${(cx - w * 0.07).toFixed(1)},${(hcy - hry * 0.7).toFixed(1)} C ${(cx - w * 0.14).toFixed(1)},${(hcy - hry * 1.4).toFixed(1)} ${(cx - w * 0.22).toFixed(1)},${(hcy - hry * 1.9).toFixed(1)} ${(cx - w * 0.26).toFixed(1)},${(hcy - hry * 2.1).toFixed(1)}" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <circle cx="${(cx - w * 0.26).toFixed(1)}" cy="${(hcy - hry * 2.1).toFixed(1)}" r="${(w * 0.032).toFixed(1)}" fill="#222"/>
+  <path d="M ${(cx + w * 0.07).toFixed(1)},${(hcy - hry * 0.7).toFixed(1)} C ${(cx + w * 0.14).toFixed(1)},${(hcy - hry * 1.4).toFixed(1)} ${(cx + w * 0.22).toFixed(1)},${(hcy - hry * 1.9).toFixed(1)} ${(cx + w * 0.26).toFixed(1)},${(hcy - hry * 2.1).toFixed(1)}" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <circle cx="${(cx + w * 0.26).toFixed(1)}" cy="${(hcy - hry * 2.1).toFixed(1)}" r="${(w * 0.032).toFixed(1)}" fill="#222"/>
+  <!-- Legs (3 per side) -->
+  <g stroke="#222" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.70">
+    <line x1="${(cx - rx * 0.92).toFixed(1)}" y1="${(cy - ry * 0.12).toFixed(1)}" x2="${(cx - rx * 1.22).toFixed(1)}" y2="${(cy - ry * 0.35).toFixed(1)}"/>
+    <line x1="${(cx - rx * 0.96).toFixed(1)}" y1="${(cy + ry * 0.10).toFixed(1)}" x2="${(cx - rx * 1.30).toFixed(1)}" y2="${(cy + ry * 0.10).toFixed(1)}"/>
+    <line x1="${(cx - rx * 0.92).toFixed(1)}" y1="${(cy + ry * 0.32).toFixed(1)}" x2="${(cx - rx * 1.22).toFixed(1)}" y2="${(cy + ry * 0.52).toFixed(1)}"/>
+    <line x1="${(cx + rx * 0.92).toFixed(1)}" y1="${(cy - ry * 0.12).toFixed(1)}" x2="${(cx + rx * 1.22).toFixed(1)}" y2="${(cy - ry * 0.35).toFixed(1)}"/>
+    <line x1="${(cx + rx * 0.96).toFixed(1)}" y1="${(cy + ry * 0.10).toFixed(1)}" x2="${(cx + rx * 1.30).toFixed(1)}" y2="${(cy + ry * 0.10).toFixed(1)}"/>
+    <line x1="${(cx + rx * 0.92).toFixed(1)}" y1="${(cy + ry * 0.32).toFixed(1)}" x2="${(cx + rx * 1.22).toFixed(1)}" y2="${(cy + ry * 0.52).toFixed(1)}"/>
+  </g>
+  <!-- Letter -->
+  <text x="${cx}" y="${(cy + h * 0.06).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins,Arial,sans-serif" font-weight="800" font-size="${fs}" fill="rgba(255,255,255,0.96)" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,0.45))">${item.letter}</text>
+</svg>`;
+}
+
+/* ── 5. MONSTER TRUCK WHEEL ── */
+function makeWheelSVG(item, w, h, fs) {
+  const u = `wh${Math.random().toString(36).slice(2,6)}`;
+  const cx = w/2, cy = h/2;
+  const Ro = w*0.46, Ri = w*0.30, Rh = w*0.17, Rc = w*0.09;
+  const k = Ro*0.5523;
+  const outerPath = `M ${cx},${cy-Ro} C ${cx+k},${cy-Ro} ${cx+Ro},${cy-k} ${cx+Ro},${cy} C ${cx+Ro},${cy+k} ${cx+k},${cy+Ro} ${cx},${cy+Ro} C ${cx-k},${cy+Ro} ${cx-Ro},${cy+k} ${cx-Ro},${cy} C ${cx-Ro},${cy-k} ${cx-k},${cy-Ro} ${cx},${cy-Ro} Z`;
+  const ki = Ri*0.5523;
+  const innerPath = `M ${cx},${cy-Ri} C ${cx+ki},${cy-Ri} ${cx+Ri},${cy-ki} ${cx+Ri},${cy} C ${cx+Ri},${cy+ki} ${cx+ki},${cy+Ri} ${cx},${cy+Ri} C ${cx-ki},${cy+Ri} ${cx-Ri},${cy+ki} ${cx-Ri},${cy} C ${cx-Ri},${cy-ki} ${cx-ki},${cy-Ri} ${cx},${cy-Ri} Z`;
+  // 16 tread blocks around rim
+  let treads = '';
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2 - Math.PI/32;
+    const x1 = cx + (Ro-1)*Math.cos(a), y1 = cy + (Ro-1)*Math.sin(a);
+    const x2 = cx + (Ri+2)*Math.cos(a), y2 = cy + (Ri+2)*Math.sin(a);
+    treads += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#1A1A1A" stroke-width="5" opacity="0.5"/>`;
+  }
+  // 6 spokes
+  let spokes = '';
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2;
+    spokes += `<line x1="${(cx+Rc*1.1*Math.cos(a)).toFixed(1)}" y1="${(cy+Rc*1.1*Math.sin(a)).toFixed(1)}" x2="${(cx+(Rh-.5)*Math.cos(a)).toFixed(1)}" y2="${(cy+(Rh-.5)*Math.sin(a)).toFixed(1)}" stroke="${item.dark}" stroke-width="6" stroke-linecap="round"/>`;
+  }
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="tg-${u}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#444"/><stop offset="100%" stop-color="#111"/></radialGradient>
+    <radialGradient id="hg-${u}" cx="35%" cy="30%" r="72%"><stop offset="0%" stop-color="${item.light}"/><stop offset="48%" stop-color="${item.color}"/><stop offset="100%" stop-color="${item.dark}"/></radialGradient>
+    <radialGradient id="thl-${u}" cx="30%" cy="25%" r="60%"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>
+    <filter id="wf-${u}" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="2" dy="4" stdDeviation="5" flood-color="rgba(0,0,0,0.32)"/></filter>
+    <clipPath id="wc-${u}"><path d="${outerPath}"/></clipPath>
+    <clipPath id="wci-${u}"><path d="${innerPath}"/></clipPath>
+    <mask id="wm-${u}">
+      <path d="${outerPath}" fill="white"/>
+      <path d="${innerPath}" fill="black"/>
+    </mask>
+  </defs>
+  <!-- Tire -->
+  <path d="${outerPath}" fill="url(#tg-${u})" filter="url(#wf-${u})"/>
+  <!-- Tread marks in annular ring -->
+  <g mask="url(#wm-${u})">${treads}</g>
+  <!-- Tire highlight -->
+  <path d="${outerPath}" fill="url(#thl-${u})"/>
+  <!-- Rim/hub area -->
+  <path d="${innerPath}" fill="url(#hg-${u})"/>
+  <!-- Spokes -->
+  ${spokes}
+  <!-- Center cap -->
+  <circle cx="${cx}" cy="${cy}" r="${Rc}" fill="${item.light}"/>
+  <circle cx="${cx}" cy="${cy}" r="${Rc*.6}" fill="${item.color}"/>
+  <!-- Hub highlight -->
+  <ellipse cx="${(cx-Rh*.22).toFixed(1)}" cy="${(cy-Rh*.22).toFixed(1)}" rx="${(Rh*.30).toFixed(1)}" ry="${(Rh*.20).toFixed(1)}" fill="rgba(255,255,255,0.38)" transform="rotate(-30 ${(cx-Rh*.22).toFixed(1)} ${(cy-Rh*.22).toFixed(1)})"/>
+  <!-- Letter -->
+  <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins,Arial,sans-serif" font-weight="800" font-size="${fs}" fill="rgba(255,255,255,0.96)" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,0.40))">${item.letter}</text>
+</svg>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TARGET SVG STRINGS (static; inserted per theme)
+═══════════════════════════════════════════════════════════ */
+
+const TARGET_ICECREAM = `
+<svg width="210" height="260" viewBox="0 0 210 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="coneG" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6B2E00"/><stop offset="14%" stop-color="#B86010"/><stop offset="36%" stop-color="#E09830"/><stop offset="50%" stop-color="#F5B840"/><stop offset="64%" stop-color="#E09830"/><stop offset="86%" stop-color="#B86010"/><stop offset="100%" stop-color="#6B2E00"/></linearGradient>
+    <linearGradient id="coneTG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(255,220,120,0.20)"/><stop offset="50%" stop-color="rgba(255,220,120,0)"/><stop offset="100%" stop-color="rgba(60,20,0,0.30)"/></linearGradient>
+    <linearGradient id="rimTopG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFE890"/><stop offset="30%" stop-color="#E8A020"/><stop offset="100%" stop-color="#9B5210"/></linearGradient>
+    <linearGradient id="coneHL" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.11)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient>
+    <clipPath id="coneClip"><polygon points="105,254 10,42 200,42"/></clipPath>
+    <filter id="coneShadow" x="-12%" y="-4%" width="124%" height="118%"><feDropShadow dx="3" dy="9" stdDeviation="8" flood-color="rgba(80,35,0,0.35)"/></filter>
+  </defs>
+  <polygon points="105,254 10,42 200,42" fill="url(#coneG)" filter="url(#coneShadow)"/>
+  <polygon points="105,254 10,42 200,42" fill="url(#coneTG)"/>
+  <g clip-path="url(#coneClip)" stroke="#6B2E00" fill="none" stroke-linecap="round">
+    <line x1="0" y1="66" x2="210" y2="66" stroke-width="1.8" opacity="0.48"/>
+    <line x1="0" y1="90" x2="210" y2="90" stroke-width="1.7" opacity="0.44"/>
+    <line x1="0" y1="114" x2="210" y2="114" stroke-width="1.6" opacity="0.42"/>
+    <line x1="0" y1="138" x2="210" y2="138" stroke-width="1.5" opacity="0.40"/>
+    <line x1="0" y1="162" x2="210" y2="162" stroke-width="1.4" opacity="0.37"/>
+    <line x1="0" y1="186" x2="210" y2="186" stroke-width="1.3" opacity="0.34"/>
+    <line x1="0" y1="210" x2="210" y2="210" stroke-width="1.2" opacity="0.30"/>
+    <line x1="0" y1="234" x2="210" y2="234" stroke-width="1.0" opacity="0.24"/>
+    <line x1="-70" y1="42" x2="145" y2="257" stroke-width="1.6" opacity="0.42"/>
+    <line x1="-44" y1="42" x2="171" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="-18" y1="42" x2="197" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="8"   y1="42" x2="223" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="34"  y1="42" x2="249" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="60"  y1="42" x2="275" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="86"  y1="42" x2="301" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="112" y1="42" x2="327" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="138" y1="42" x2="353" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="164" y1="42" x2="379" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="190" y1="42" x2="405" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="280" y1="42" x2="65"  y2="257" stroke-width="1.6" opacity="0.42"/>
+    <line x1="254" y1="42" x2="39"  y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="228" y1="42" x2="13"  y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="202" y1="42" x2="-13" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="176" y1="42" x2="-39" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="150" y1="42" x2="-65" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="124" y1="42" x2="-91" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="98"  y1="42" x2="-117" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="72"  y1="42" x2="-143" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="46"  y1="42" x2="-169" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <line x1="20"  y1="42" x2="-195" y2="257" stroke-width="1.5" opacity="0.40"/>
+    <g fill="#6B2E00" stroke="none" opacity="0.22">
+      <circle cx="105" cy="66" r="4"/><circle cx="105" cy="90" r="3.8"/><circle cx="105" cy="114" r="3.5"/>
+      <circle cx="105" cy="138" r="3.2"/><circle cx="79" cy="90" r="3.2"/><circle cx="131" cy="90" r="3.2"/>
+    </g>
+  </g>
+  <polygon points="105,254 10,42 55,42" fill="url(#coneHL)"/>
+  <ellipse cx="105" cy="253" rx="13" ry="4.5" fill="rgba(60,20,0,0.22)"/>
+  <ellipse cx="105" cy="42" rx="96" ry="20" fill="url(#rimTopG)"/>
+  <ellipse cx="98"  cy="34" rx="80" ry="10" fill="rgba(255,242,150,0.58)"/>
+  <ellipse cx="105" cy="52" rx="86" ry="9"  fill="rgba(80,32,0,0.26)"/>
+  <path d="M 16,42 Q 58,24 104,32" stroke="rgba(255,242,160,0.55)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 194,42 Q 162,30 130,34" stroke="rgba(255,230,120,0.28)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const TARGET_FLOWER = `
+<svg width="210" height="310" viewBox="0 0 210 310" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stemG" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#15803D"/><stop offset="45%" stop-color="#4ADE80"/><stop offset="100%" stop-color="#15803D"/></linearGradient>
+    <linearGradient id="leafG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#86EFAC"/><stop offset="100%" stop-color="#15803D"/></linearGradient>
+    <radialGradient id="diskG" cx="36%" cy="30%" r="68%"><stop offset="0%" stop-color="#92400E"/><stop offset="55%" stop-color="#451A03"/><stop offset="100%" stop-color="#2C0A00"/></radialGradient>
+    <radialGradient id="petalP" cx="50%" cy="85%" r="70%"><stop offset="0%" stop-color="#F9A8D4"/><stop offset="55%" stop-color="#EC4899"/><stop offset="100%" stop-color="#9D174D"/></radialGradient>
+    <radialGradient id="petalV" cx="50%" cy="85%" r="70%"><stop offset="0%" stop-color="#DDD6FE"/><stop offset="55%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#4C1D95"/></radialGradient>
+    <radialGradient id="petalO" cx="50%" cy="85%" r="70%"><stop offset="0%" stop-color="#FED7AA"/><stop offset="55%" stop-color="#F97316"/><stop offset="100%" stop-color="#7C2D12"/></radialGradient>
+    <radialGradient id="petalY" cx="50%" cy="85%" r="70%"><stop offset="0%" stop-color="#FEF08A"/><stop offset="55%" stop-color="#EAB308"/><stop offset="100%" stop-color="#713F12"/></radialGradient>
+    <filter id="flShadow" x="-20%" y="-15%" width="140%" height="140%"><feDropShadow dx="1" dy="5" stdDeviation="5" flood-color="rgba(0,60,0,0.20)"/></filter>
+    <filter id="petalShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="1" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.18)"/></filter>
+  </defs>
+
+  <!-- Stem -->
+  <rect x="98" y="128" width="14" height="182" rx="7" fill="url(#stemG)" filter="url(#flShadow)"/>
+  <rect x="100" y="134" width="4" height="170" rx="2" fill="rgba(255,255,255,0.18)"/>
+
+  <!-- Left leaf -->
+  <path d="M 98,200 C 55,178 22,188 12,210 C 26,196 65,202 98,210 Z" fill="url(#leafG)" filter="url(#flShadow)"/>
+  <path d="M 98,200 C 68,190 44,196 28,206" stroke="#15803D" stroke-width="1.2" fill="none" opacity="0.45"/>
+
+  <!-- Right leaf -->
+  <path d="M 112,245 C 155,224 188,234 198,256 C 184,242 144,248 112,256 Z" fill="url(#leafG)" filter="url(#flShadow)"/>
+  <path d="M 112,245 C 140,238 165,242 182,250" stroke="#15803D" stroke-width="1.2" fill="none" opacity="0.45"/>
+
+  <!-- PRE-PLACED PETALS (4 of 5 — bottom-right, bottom, bottom-left, left positions) -->
+
+  <!-- Petal 1: right (pink) -->
+  <path d="M 105,115 C 130,115 152,92 152,68 C 152,46 130,28 105,28 C 105,28 105,115 105,115 Z"
+        fill="url(#petalP)" filter="url(#petalShadow)" transform="rotate(90 105 115)"/>
+  <!-- Petal 1 vein -->
+  <path d="M 105,115 L 105,44" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" transform="rotate(90 105 115)"/>
+
+  <!-- Petal 2: bottom (violet) -->
+  <path d="M 105,115 C 130,115 152,92 152,68 C 152,46 130,28 105,28 C 105,28 105,115 105,115 Z"
+        fill="url(#petalV)" filter="url(#petalShadow)" transform="rotate(150 105 115)"/>
+  <path d="M 105,115 L 105,44" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" transform="rotate(150 105 115)"/>
+
+  <!-- Petal 3: bottom-left (orange) -->
+  <path d="M 105,115 C 130,115 152,92 152,68 C 152,46 130,28 105,28 C 105,28 105,115 105,115 Z"
+        fill="url(#petalO)" filter="url(#petalShadow)" transform="rotate(210 105 115)"/>
+  <path d="M 105,115 L 105,44" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" transform="rotate(210 105 115)"/>
+
+  <!-- Petal 4: left (yellow) -->
+  <path d="M 105,115 C 130,115 152,92 152,68 C 152,46 130,28 105,28 C 105,28 105,115 105,115 Z"
+        fill="url(#petalY)" filter="url(#petalShadow)" transform="rotate(270 105 115)"/>
+  <path d="M 105,115 L 105,44" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none" transform="rotate(270 105 115)"/>
+
+  <!-- Missing petal slots (top-right + top-left, dashed outlines) -->
+  <path d="M 105,115 C 130,115 152,92 152,68 C 152,46 130,28 105,28 C 105,28 105,115 105,115 Z"
+        fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.38)" stroke-width="2" stroke-dasharray="6 4"
+        transform="rotate(30 105 115)"/>
+  <path d="M 105,115 C 130,115 152,92 152,68 C 152,46 130,28 105,28 C 105,28 105,115 105,115 Z"
+        fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.38)" stroke-width="2" stroke-dasharray="6 4"
+        transform="rotate(330 105 115)"/>
+
+  <!-- Flower center disk -->
+  <circle cx="105" cy="115" r="40" fill="url(#diskG)" filter="url(#flShadow)"/>
+  <!-- Center seed dots -->
+  <g fill="#5C2E00" opacity="0.55">
+    <circle cx="105" cy="97"  r="3.2"/><circle cx="118" cy="101" r="3.2"/><circle cx="125" cy="112" r="3.2"/>
+    <circle cx="121" cy="124" r="3.2"/><circle cx="110" cy="131" r="3.2"/><circle cx="98"  cy="131" r="3.2"/>
+    <circle cx="87"  cy="124" r="3.2"/><circle cx="83"  cy="112" r="3.2"/><circle cx="90"  cy="101" r="3.2"/>
+    <circle cx="104" cy="107" r="2.8"/><circle cx="114" cy="111" r="2.8"/><circle cx="116" cy="120" r="2.8"/>
+    <circle cx="110" cy="127" r="2.8"/><circle cx="100" cy="127" r="2.8"/><circle cx="93"  cy="120" r="2.8"/>
+    <circle cx="94"  cy="111" r="2.8"/><circle cx="105" cy="115" r="4"/>
+  </g>
+  <!-- Center disk highlight -->
+  <ellipse cx="97" cy="106" rx="14" ry="9" fill="rgba(255,200,80,0.12)" transform="rotate(-20 97 106)"/>
+  <path d="M 76,100 Q 90,88 106,90" stroke="rgba(255,240,150,0.40)" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const TARGET_STARS = `
+<svg width="320" height="220" viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0A0820"/><stop offset="55%" stop-color="#1A1640"/><stop offset="100%" stop-color="#2D3070"/></linearGradient>
+    <radialGradient id="moonG" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#FFFDE0"/><stop offset="50%" stop-color="#FFF176"/><stop offset="100%" stop-color="#F9A825"/></radialGradient>
+    <filter id="starGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.8" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+    <filter id="moonShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(255,200,0,0.30)"/></filter>
+    <clipPath id="skyClip"><rect width="320" height="220" rx="22"/></clipPath>
+  </defs>
+  <rect width="320" height="220" rx="22" fill="url(#skyG)"/>
+  <!-- Subtle nebula haze -->
+  <ellipse cx="160" cy="90" rx="120" ry="60" fill="rgba(80,60,160,0.12)"/>
+  <ellipse cx="260" cy="140" rx="80" ry="40" fill="rgba(60,80,180,0.10)"/>
+  <!-- Crescent moon -->
+  <g filter="url(#moonShadow)">
+    <circle cx="264" cy="52" r="38" fill="url(#moonG)"/>
+    <circle cx="276" cy="46" r="32" fill="#1A1640"/>
+  </g>
+  <!-- Moon texture craters -->
+  <circle cx="248" cy="44" r="4" fill="rgba(200,160,40,0.25)"/>
+  <circle cx="258" cy="62" r="2.5" fill="rgba(200,160,40,0.20)"/>
+  <!-- Scattered background stars (static, tiny) -->
+  <g fill="#fff" filter="url(#starGlow)">
+    <circle cx="30"  cy="22"  r="1.8" opacity="0.9"/>
+    <circle cx="78"  cy="45"  r="1.4" opacity="0.75"/>
+    <circle cx="130" cy="18"  r="2.2" opacity="0.95"/>
+    <circle cx="185" cy="38"  r="1.6" opacity="0.80"/>
+    <circle cx="220" cy="15"  r="1.8" opacity="0.85"/>
+    <circle cx="44"  cy="80"  r="1.2" opacity="0.70"/>
+    <circle cx="100" cy="65"  r="1.5" opacity="0.78"/>
+    <circle cx="160" cy="58"  r="1.0" opacity="0.65"/>
+    <circle cx="55"  cy="130" r="1.6" opacity="0.72"/>
+    <circle cx="14"  cy="160" r="1.3" opacity="0.68"/>
+    <circle cx="290" cy="110" r="1.4" opacity="0.70"/>
+    <circle cx="310" cy="160" r="1.0" opacity="0.60"/>
+  </g>
+  <!-- 4-point sparkle stars -->
+  <g fill="#fff" opacity="0.88">
+    <path d="M 30,22 L 32,20 L 30,18 L 28,20 Z" opacity="0.7"/>
+    <path d="M 130,18 L 133,15 L 130,12 L 127,15 Z" opacity="0.8"/>
+  </g>
+  <!-- Soft cloud wisps at bottom -->
+  <ellipse cx="60"  cy="210" rx="70" ry="22" fill="rgba(255,255,255,0.06)"/>
+  <ellipse cx="180" cy="214" rx="90" ry="18" fill="rgba(255,255,255,0.05)"/>
+  <ellipse cx="290" cy="210" rx="60" ry="20" fill="rgba(255,255,255,0.06)"/>
+  <!-- Border glow -->
+  <rect width="320" height="220" rx="22" fill="none" stroke="rgba(100,80,200,0.35)" stroke-width="2.5"/>
+</svg>`;
+
+const TARGET_JAR = `
+<svg width="190" height="290" viewBox="0 0 190 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lidG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#C0C8D0"/><stop offset="35%" stop-color="#9AAAB8"/><stop offset="100%" stop-color="#607080"/></linearGradient>
+    <linearGradient id="glassG" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(180,210,240,0.28)"/><stop offset="28%" stop-color="rgba(220,240,255,0.18)"/><stop offset="70%" stop-color="rgba(180,210,240,0.12)"/><stop offset="100%" stop-color="rgba(140,180,220,0.25)"/></linearGradient>
+    <linearGradient id="jarBodyG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(200,230,255,0.15)"/><stop offset="100%" stop-color="rgba(150,190,230,0.08)"/></linearGradient>
+    <filter id="jarShadow" x="-10%" y="-5%" width="120%" height="115%"><feDropShadow dx="4" dy="8" stdDeviation="8" flood-color="rgba(40,80,120,0.28)"/></filter>
+    <clipPath id="jarClip"><path d="M 32,68 C 28,68 24,72 24,76 L 24,258 C 24,268 32,276 42,276 L 148,276 C 158,276 166,268 166,258 L 166,76 C 166,72 162,68 158,68 Z"/></clipPath>
+  </defs>
+  <!-- Jar body -->
+  <path d="M 32,68 C 28,68 24,72 24,76 L 24,258 C 24,268 32,276 42,276 L 148,276 C 158,276 166,268 166,258 L 166,76 C 166,72 162,68 158,68 Z" fill="url(#glassG)" filter="url(#jarShadow)"/>
+  <!-- Glass body base color -->
+  <path d="M 32,68 C 28,68 24,72 24,76 L 24,258 C 24,268 32,276 42,276 L 148,276 C 158,276 166,268 166,258 L 166,76 C 166,72 162,68 158,68 Z" fill="url(#jarBodyG)"/>
+  <!-- Glass reflections (vertical strips) -->
+  <g clip-path="url(#jarClip)">
+    <rect x="30" y="72" width="14" height="198" rx="7" fill="rgba(255,255,255,0.22)"/>
+    <rect x="150" y="80" width="8"  height="180" rx="4" fill="rgba(255,255,255,0.16)"/>
+    <rect x="72" y="72" width="3"   height="198" rx="1.5" fill="rgba(255,255,255,0.10)"/>
+  </g>
+  <!-- Jar outline -->
+  <path d="M 32,68 C 28,68 24,72 24,76 L 24,258 C 24,268 32,276 42,276 L 148,276 C 158,276 166,268 166,258 L 166,76 C 166,72 162,68 158,68 Z" fill="none" stroke="rgba(100,150,190,0.50)" stroke-width="2"/>
+  <!-- Jar neck (narrower band above body) -->
+  <path d="M 42,48 L 42,68 L 148,68 L 148,48 C 148,44 144,40 140,40 L 50,40 C 46,40 42,44 42,48 Z" fill="rgba(180,210,240,0.22)"/>
+  <path d="M 42,48 L 42,68 L 148,68 L 148,48 C 148,44 144,40 140,40 L 50,40 C 46,40 42,44 42,48 Z" fill="none" stroke="rgba(100,150,190,0.45)" stroke-width="1.8"/>
+  <!-- Neck ring (thread detail) -->
+  <rect x="44" y="56" width="102" height="4" rx="2" fill="rgba(100,140,180,0.30)"/>
+  <rect x="44" y="62" width="102" height="3" rx="1.5" fill="rgba(100,140,180,0.20)"/>
+  <!-- Metal lid -->
+  <rect x="30" y="14" width="130" height="30" rx="8" fill="url(#lidG)"/>
+  <!-- Lid highlight -->
+  <rect x="34" y="16" width="122" height="10" rx="5" fill="rgba(255,255,255,0.20)"/>
+  <!-- Lid ridges -->
+  <line x1="30" y1="26" x2="160" y2="26" stroke="rgba(80,100,120,0.30)" stroke-width="1.5"/>
+  <line x1="30" y1="32" x2="160" y2="32" stroke="rgba(80,100,120,0.22)" stroke-width="1"/>
+  <!-- Lid bottom band -->
+  <rect x="30" y="40" width="130" height="8" rx="2" fill="rgba(90,110,130,0.40)"/>
+  <rect x="34" y="41" width="122" height="3" rx="1" fill="rgba(200,220,240,0.20)"/>
+  <!-- Bottom shadow ellipse -->
+  <ellipse cx="95" cy="278" rx="72" ry="9" fill="rgba(40,80,120,0.20)"/>
+</svg>`;
+
+const TARGET_TRUCK = `
+<svg width="400" height="230" viewBox="0 0 400 230" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bodyG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="40%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="bodyShineG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="60%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <linearGradient id="winG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(120,200,255,0.75)"/>
+      <stop offset="100%" stop-color="rgba(60,130,200,0.55)"/>
+    </linearGradient>
+    <linearGradient id="chassisG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="flameG1" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="50%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#FCD34D" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="flameG2" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="60%" stop-color="#FDE68A" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FCD34D" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="exhaustG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <radialGradient id="headlightG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFDE0"/>
+      <stop offset="60%" stop-color="#FDE68A"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.3"/>
+    </radialGradient>
+    <radialGradient id="rwheelG" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#555"/>
+      <stop offset="100%" stop-color="#111"/>
+    </radialGradient>
+    <radialGradient id="exhaustGlowG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(251,146,60,0.60)"/>
+      <stop offset="100%" stop-color="rgba(251,146,60,0)"/>
+    </radialGradient>
+    <filter id="truckShadow" x="-5%" y="-10%" width="110%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,0.55)"/>
+    </filter>
+    <filter id="headlightGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="exhaustGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <clipPath id="bodyClip">
+      <path d="M 52,122 L 52,46 Q 52,34 66,34 L 228,34 Q 240,34 246,46 L 268,82 L 360,82 L 360,122 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="200" cy="226" rx="188" ry="8" fill="rgba(0,0,0,0.30)"/>
+
+  <!-- Chassis / frame -->
+  <rect x="44" y="120" width="314" height="24" rx="5" fill="url(#chassisG)"/>
+  <!-- Axle bars -->
+  <rect x="78"  y="126" width="40" height="8" rx="3" fill="#475569"/>
+  <rect x="282" y="126" width="40" height="8" rx="3" fill="#475569"/>
+
+  <!-- Truck body (cab + bed) — dark matte -->
+  <path d="M 52,122 L 52,46 Q 52,34 66,34 L 228,34 Q 240,34 246,46 L 268,82 L 360,82 L 360,122 Z"
+        fill="url(#bodyG)" filter="url(#truckShadow)"/>
+  <!-- Body shine overlay -->
+  <path d="M 56,118 L 56,50 Q 56,40 68,40 L 224,40 Q 234,40 240,50 L 260,82 L 340,82 L 340,118 Z"
+        fill="url(#bodyShineG)"/>
+
+  <!-- Side stripe / racing accent -->
+  <rect x="52" y="100" width="308" height="6" rx="3" fill="#3B82F6" opacity="0.55"/>
+  <rect x="52" y="106" width="308" height="2" rx="1" fill="rgba(255,255,255,0.18)"/>
+
+  <!-- Flame decals on lower body -->
+  <g opacity="0.78">
+    <path d="M 66,122 C 72,108 76,96 82,90 C 86,84 88,95 90,90 C 94,82 96,70 100,66 C 102,80 100,95 104,90 C 108,82 110,72 114,70 C 114,82 112,96 118,90 C 122,84 124,94 128,100 C 130,110 126,122 66,122 Z"
+          fill="url(#flameG1)"/>
+    <path d="M 74,122 C 78,112 80,100 85,94 C 87,90 89,98 92,93 C 95,86 97,76 101,73 C 101,85 99,96 104,92 C 108,88 112,122 74,122 Z"
+          fill="url(#flameG2)"/>
+  </g>
+
+  <!-- Roll cage bars visible in window area -->
+  <g clip-path="url(#bodyClip)" stroke="rgba(100,130,160,0.50)" stroke-width="2.5" fill="none">
+    <line x1="120" y1="38" x2="120" y2="122"/>
+    <line x1="160" y1="38" x2="160" y2="122"/>
+    <line x1="200" y1="38" x2="200" y2="122"/>
+    <line x1="80"  y1="80" x2="360" y2="80"/>
+  </g>
+
+  <!-- Windshield -->
+  <path d="M 196,44 L 196,82 L 248,82 L 252,76 L 238,44 Z"
+        fill="url(#winG)"/>
+  <path d="M 196,44 L 196,82 L 248,82 L 252,76 L 238,44 Z"
+        fill="none" stroke="rgba(100,180,255,0.45)" stroke-width="1.5"/>
+  <!-- Windshield reflection strip -->
+  <path d="M 200,47 L 200,79 L 215,79 L 215,47 Z" fill="rgba(255,255,255,0.15)" rx="2"/>
+
+  <!-- Side window (cab) -->
+  <rect x="66" y="46" width="120" height="64" rx="10" fill="url(#winG)"/>
+  <rect x="66" y="46" width="120" height="64" rx="10" fill="none" stroke="rgba(100,180,255,0.45)" stroke-width="1.5"/>
+  <!-- Window reflections -->
+  <rect x="70" y="50" width="18" height="42" rx="5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="94" y="50" width="7"  height="42" rx="3" fill="rgba(255,255,255,0.10)"/>
+
+  <!-- Cargo bed panels -->
+  <rect x="268" y="90" width="90" height="32" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(100,130,180,0.28)" stroke-width="1.2"/>
+  <line x1="298" y1="90" x2="298" y2="122" stroke="rgba(100,130,180,0.22)" stroke-width="1"/>
+  <line x1="328" y1="90" x2="328" y2="122" stroke="rgba(100,130,180,0.22)" stroke-width="1"/>
+
+  <!-- Racing number decal -->
+  <rect x="292" y="94" width="36" height="24" rx="5" fill="rgba(59,130,246,0.30)" stroke="rgba(59,130,246,0.55)" stroke-width="1.2"/>
+  <text x="310" y="110" text-anchor="middle" dominant-baseline="middle" font-family="Poppins,sans-serif" font-size="13" font-weight="900" fill="rgba(255,255,255,0.82)">99</text>
+
+  <!-- Dual exhaust stacks -->
+  <rect x="246" y="10" width="10" height="60" rx="5" fill="url(#exhaustG)"/>
+  <rect x="260" y="16" width="8"  height="54" rx="4" fill="url(#exhaustG)"/>
+  <!-- Exhaust glow (heat shimmer) -->
+  <ellipse cx="251" cy="10" rx="14" ry="10" fill="url(#exhaustGlowG)" filter="url(#exhaustGlow)"/>
+  <ellipse cx="264" cy="16" rx="11" ry="8"  fill="url(#exhaustGlowG)" filter="url(#exhaustGlow)"/>
+  <!-- Exhaust smoke puffs -->
+  <circle cx="251" cy="5"  r="7" fill="rgba(200,210,220,0.22)"/>
+  <circle cx="258" cy="2"  r="5" fill="rgba(200,210,220,0.16)"/>
+  <circle cx="264" cy="10" r="5" fill="rgba(200,210,220,0.18)"/>
+  <!-- Exhaust cap rings -->
+  <ellipse cx="251" cy="10" rx="6" ry="3" fill="#64748B"/>
+  <ellipse cx="264" cy="16" rx="5" ry="2.5" fill="#64748B"/>
+
+  <!-- Front headlights (LED quad) -->
+  <rect x="44" y="68" width="16" height="10" rx="3" fill="url(#headlightG)" filter="url(#headlightGlow)"/>
+  <rect x="44" y="82" width="16" height="7"  rx="2.5" fill="rgba(148,200,255,0.70)"/>
+  <!-- Headlight glow beam -->
+  <ellipse cx="40" cy="73" rx="18" ry="10" fill="rgba(253,230,138,0.28)" filter="url(#headlightGlow)"/>
+
+  <!-- Grille -->
+  <rect x="44" y="92" width="20" height="30" rx="4" fill="#1E293B" stroke="#475569" stroke-width="1.2"/>
+  <g stroke="#475569" stroke-width="1" opacity="0.7">
+    <line x1="48" y1="97"  x2="60" y2="97"/><line x1="48" y1="102" x2="60" y2="102"/>
+    <line x1="48" y1="107" x2="60" y2="107"/><line x1="48" y1="112" x2="60" y2="112"/>
+    <line x1="48" y1="117" x2="60" y2="117"/>
+  </g>
+
+  <!-- Front chrome bumper -->
+  <rect x="40" y="108" width="24" height="16" rx="5" fill="#CBD5E1"/>
+  <rect x="42" y="110" width="20" height="6"  rx="3" fill="rgba(255,255,255,0.45)"/>
+  <!-- Front tow hook -->
+  <rect x="50" y="122" width="6" height="5" rx="2" fill="#94A3B8"/>
+
+  <!-- Rear bumper / step -->
+  <rect x="338" y="110" width="24" height="16" rx="5" fill="#CBD5E1"/>
+  <rect x="340" y="112" width="20" height="6"  rx="3" fill="rgba(255,255,255,0.40)"/>
+
+  <!-- FRONT WHEEL WELL — round 1 drop zone -->
+  <circle cx="98"  cy="168" r="56" fill="rgba(0,0,0,0.25)" stroke="#475569" stroke-width="3" stroke-dasharray="10 6"/>
+  <circle cx="98"  cy="168" r="44" fill="rgba(0,0,0,0.12)" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+  <!-- REAR WHEEL WELL — round 2 drop zone -->
+  <circle cx="315" cy="168" r="56" fill="rgba(0,0,0,0.25)" stroke="#475569" stroke-width="3" stroke-dasharray="10 6"/>
+  <circle cx="315" cy="168" r="44" fill="rgba(0,0,0,0.12)" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 6"/>
+</svg>`;
+
+/* ═══════════════════════════════════════════════════════════
+   COLOR PALETTES (per theme)
+═══════════════════════════════════════════════════════════ */
+const ICE_CREAM_COLORS = [
+  { color:'#FC6D6D', dark:'#C04040', light:'#FFA0A0' },
+  { color:'#5CBABA', dark:'#3A8A8A', light:'#90D8D8' },
+  { color:'#A178C9', dark:'#7050A0', light:'#C8A8E8' },
+  { color:'#F5A623', dark:'#C07808', light:'#FFD070' },
+  { color:'#82D1A8', dark:'#48A070', light:'#B8EDD0' },
+  { color:'#FF8FAB', dark:'#CC5577', light:'#FFB8CC' },
+  { color:'#6B9FE4', dark:'#4070B8', light:'#9BC0F0' },
+  { color:'#F7A35C', dark:'#C07030', light:'#FFD090' },
+];
+const PETAL_COLORS = [
+  { color:'#F472B6', dark:'#9D174D', light:'#FBB6CE' },
+  { color:'#A78BFA', dark:'#5B21B6', light:'#DDD6FE' },
+  { color:'#FB923C', dark:'#C2410C', light:'#FED7AA' },
+  { color:'#FDE047', dark:'#A16207', light:'#FEF9C3' },
+  { color:'#34D399', dark:'#065F46', light:'#A7F3D0' },
+  { color:'#F87171', dark:'#991B1B', light:'#FECACA' },
+  { color:'#60A5FA', dark:'#1D4ED8', light:'#BFDBFE' },
+  { color:'#E879F9', dark:'#86198F', light:'#F5D0FE' },
+];
+const STAR_COLORS = [
+  { color:'#FCD34D', dark:'#D97706', light:'#FEF9C3' },
+  { color:'#93C5FD', dark:'#2563EB', light:'#EFF6FF' },
+  { color:'#F9A8D4', dark:'#BE185D', light:'#FCE7F3' },
+  { color:'#6EE7B7', dark:'#059669', light:'#ECFDF5' },
+  { color:'#C4B5FD', dark:'#7C3AED', light:'#F5F3FF' },
+  { color:'#FCA5A5', dark:'#DC2626', light:'#FEF2F2' },
+  { color:'#FDE68A', dark:'#D97706', light:'#FFFBEB' },
+  { color:'#A5F3FC', dark:'#0891B2', light:'#ECFEFF' },
+];
+const BUTTERFLY_COLORS = [
+  { color:'#F97316', dark:'#7C2D12', light:'#FED7AA' },
+  { color:'#3B82F6', dark:'#1E3A8A', light:'#BFDBFE' },
+  { color:'#A855F7', dark:'#581C87', light:'#E9D5FF' },
+  { color:'#EF4444', dark:'#7F1D1D', light:'#FEE2E2' },
+  { color:'#10B981', dark:'#064E3B', light:'#A7F3D0' },
+  { color:'#EAB308', dark:'#713F12', light:'#FEF9C3' },
+  { color:'#EC4899', dark:'#831843', light:'#FCE7F3' },
+  { color:'#14B8A6', dark:'#134E4A', light:'#CCFBF1' },
+];
+const WHEEL_COLORS = [
+  { color:'#EF4444', dark:'#7F1D1D', light:'#FCA5A5' },
+  { color:'#3B82F6', dark:'#1E3A8A', light:'#93C5FD' },
+  { color:'#F59E0B', dark:'#78350F', light:'#FDE68A' },
+  { color:'#8B5CF6', dark:'#4C1D95', light:'#C4B5FD' },
+  { color:'#10B981', dark:'#064E3B', light:'#6EE7B7' },
+  { color:'#F97316', dark:'#7C2D12', light:'#FED7AA' },
+  { color:'#EC4899', dark:'#831843', light:'#F9A8D4' },
+  { color:'#06B6D4', dark:'#164E63', light:'#A5F3FC' },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   THEMES ARRAY
+═══════════════════════════════════════════════════════════ */
+const THEMES = [
+  {
+    id: 'icecream', icon: '🍦', title: 'Letter Ice Cream', sub: 'Letter Recognition · Kindergarten ELA',
+    colors: ICE_CREAM_COLORS,
+    makeItemSVG: makeIceCreamSVG,
+    itemW: 120, itemH: 120, itemFs: 44,
+    stackedW: 155, stackedH: 155, stackedFs: 52,
+    ghostOX: 60, ghostOY: 60,
+    targetHTML: TARGET_ICECREAM,
+    targetLayout: 'stack',                            // drop zone above SVG
+    dzStyle: 'width:192px;height:130px;border-radius:50% 50% 30% 30% / 60% 60% 30% 30%;margin-bottom:-44px;',
+    stackedStyle:  'left:50%;top:10px;transform:translateX(-50%);',
+    stackedStyle2: 'left:50%;top:-110px;transform:translateX(-50%);',
+    stackedAnimation: 'itemland',
+    audioIntro: (U) => `Find the scoop with the letter ${U} and drag it to the cone!`,
+    audioPraise: (U, word) => [`Yes! That's the letter ${U}! It makes the ${LETTER_SOUNDS[U]} sound!`, `Great job! ${U} is for ${word}!`, `${U} sounds like ${LETTER_SOUNDS[U]}, as in ${word}!`, `Wonderful! ${U} makes the ${LETTER_SOUNDS[U]} sound!`],
+  },
+  {
+    id: 'flower', icon: '🌸', title: 'Letter Flowers', sub: 'Letter Recognition · Kindergarten ELA',
+    colors: PETAL_COLORS,
+    makeItemSVG: makeFlowerPetalSVG,
+    itemW: 90, itemH: 130, itemFs: 40,
+    stackedW: 70, stackedH: 100, stackedFs: 28,
+    ghostOX: 45, ghostOY: 65,
+    targetHTML: TARGET_FLOWER,
+    targetLayout: 'overlay',
+    targetW: 210, targetH: 310,
+    // DZ is a circle centered exactly on the flower disk (SVG cx=105, cy=115)
+    dzStyle: 'width:100px;height:100px;border-radius:50%;top:65px;left:55px;',
+    // Petals anchor their bottom-center at the flower disk center; rotate outward
+    // Petal is 70×100px. Bottom-center of petal div must sit at flower center (105,115).
+    // DZ top-left = (55,65). Stacked item left/top relative to DZ:
+    //   left: 105 - 55 - 70/2 = 15px
+    //   top:  115 - 65 - 100  = -50px
+    stackedStyle:  'left:15px;top:-50px;transform-origin:50% 100%;transform:rotate(30deg);',
+    stackedStyle2: 'left:15px;top:-50px;transform-origin:50% 100%;transform:rotate(-30deg);',
+    stackedAnimation:  'itemland-rotate-1',
+    stackedAnimation2: 'itemland-rotate-2',
+    audioIntro: (U) => `Find the petal with the letter ${U} and drag it to the flower!`,
+    audioPraise: (U, word) => [`Yes! ${U} makes the ${LETTER_SOUNDS[U]} sound, like in ${word}!`, `Beautiful! ${U} is for ${word}!`, `That's the letter ${U}! It sounds like ${LETTER_SOUNDS[U]}!`, `Wonderful! ${U} makes the ${LETTER_SOUNDS[U]} sound!`],
+  },
+  {
+    id: 'stars', icon: '⭐', title: 'Letter Stars', sub: 'Letter Recognition · Kindergarten ELA',
+    colors: STAR_COLORS,
+    makeItemSVG: makeStarSVG,
+    itemW: 110, itemH: 110, itemFs: 42,
+    stackedW: 130, stackedH: 130, stackedFs: 48,
+    ghostOX: 55, ghostOY: 55,
+    targetHTML: TARGET_STARS,
+    targetLayout: 'overlay',
+    targetW: 320, targetH: 220,
+    dzStyle: 'width:320px;height:220px;border-radius:22px;top:0;left:0;',
+    stackedStyle:  'left:28%;top:30%;transform:translate(-50%,-50%);',
+    stackedStyle2: 'left:72%;top:62%;transform:translate(-50%,-50%);',
+    stackedAnimation: 'itemland-center',
+    audioIntro: (U) => `Find the star with the letter ${U} and drag it into the night sky!`,
+    audioPraise: (U, word) => [`Yes! ${U} makes the ${LETTER_SOUNDS[U]} sound, like in ${word}!`, `Shining! ${U} is for ${word}!`, `That's the letter ${U}! It sounds like ${LETTER_SOUNDS[U]}!`, `Twinkle! ${U} makes the ${LETTER_SOUNDS[U]} sound!`],
+  },
+  {
+    id: 'butterfly', icon: '🐞', title: 'Letter Ladybugs', sub: 'Letter Recognition · Kindergarten ELA',
+    colors: BUTTERFLY_COLORS,
+    makeItemSVG: makeLadybugSVG,
+    itemW: 120, itemH: 120, itemFs: 40,
+    stackedW: 95, stackedH: 95, stackedFs: 34,
+    ghostOX: 60, ghostOY: 60,
+    targetHTML: TARGET_JAR,
+    targetLayout: 'overlay',
+    targetW: 190, targetH: 290,
+    dzStyle: 'width:142px;height:190px;border-radius:14px;top:68px;left:24px;',
+    stackedStyle:  'left:38%;top:30%;transform:translate(-50%,-50%);',
+    stackedStyle2: 'left:62%;top:70%;transform:translate(-50%,-50%);',
+    stackedAnimation: 'itemland-center',
+    audioIntro: (U) => `Find the ladybug with the letter ${U} and drop it in the jar!`,
+    audioPraise: (U, word) => [`Yes! ${U} makes the ${LETTER_SOUNDS[U]} sound, like in ${word}!`, `Spotted it! ${U} is for ${word}!`, `That's the letter ${U}! It sounds like ${LETTER_SOUNDS[U]}!`, `You caught the ${U}! It makes the ${LETTER_SOUNDS[U]} sound!`],
+  },
+  {
+    id: 'truck', icon: '🚛', title: 'Monster Truck Letters', sub: 'Letter Recognition · Kindergarten ELA',
+    colors: WHEEL_COLORS,
+    makeItemSVG: makeWheelSVG,
+    itemW: 120, itemH: 120, itemFs: 42,
+    stackedW: 108, stackedH: 108, stackedFs: 38,
+    ghostOX: 60, ghostOY: 60,
+    targetHTML: TARGET_TRUCK,
+    targetLayout: 'overlay',
+    targetW: 400, targetH: 230,
+    dzStyle:  'width:108px;height:108px;border-radius:50%;top:116px;left:38px;',
+    dzStyle2: 'width:108px;height:108px;border-radius:50%;top:116px;left:261px;',
+    stackedStyle:  'left:50%;top:50%;transform:translate(-50%,-50%);',
+    stackedStyle2: 'left:50%;top:50%;transform:translate(-50%,-50%);',
+    stackedAnimation: 'itemland-center',
+    audioIntro: (U) => `Find the wheel with the letter ${U} and put it on the monster truck!`,
+    audioPraise: (U, word) => [`Yes! ${U} makes the ${LETTER_SOUNDS[U]} sound, like in ${word}!`, `Zoom zoom! ${U} is for ${word}!`, `That's the letter ${U}! It sounds like ${LETTER_SOUNDS[U]}!`, `Let's roll! ${U} makes the ${LETTER_SOUNDS[U]} sound!`],
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   GAME STATE
+═══════════════════════════════════════════════════════════ */
+let currentThemeIdx    = 0;
+let roundsInTheme      = 0;
+const ROUNDS_PER_THEME = 2;   // letters completed per theme before cycling
+const CORRECT_PER_LETTER = 1; // correct drops needed before moving to next letter
+let correctsThisLetter = 0;
+let currentLetterData  = null;
+let currentRound       = null;
+let score              = 0;
+let recentLetters      = [];
+let letterMisses       = {};   // { 'A': 2, 'B': 1, ... }
+let collectedLetters   = new Set();
+let isDragging         = false;
+let dragData           = null;
+let toastTimer         = null;
+let selectedItem       = null;   // tap-to-select state
+let streak             = 0;      // correct answer streak
+let hintDismissTimer   = null;   // safety timer for hint overlay
+let hasHeardInstructions = false; // whether speaker was heard this round
+
+/* ═══════════════════════════════════════════════════════════
+   THEME APPLICATION
+═══════════════════════════════════════════════════════════ */
+function applyTheme() {
+  const T = THEMES[currentThemeIdx];
+  // Header
+  document.getElementById('header-icon').textContent  = T.icon;
+  document.getElementById('header-title').textContent = T.title;
+  document.getElementById('header-sub').textContent   = T.sub;
+  // Theme progress dots
+  const dotsEl = document.getElementById('theme-dots');
+  dotsEl.innerHTML = '';
+  THEMES.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'theme-dot' + (i < currentThemeIdx ? ' done' : i === currentThemeIdx ? ' active' : '');
+    dotsEl.appendChild(d);
+  });
+  // Target scene layout
+  const scene = document.getElementById('target-scene');
+  scene.className = 'target-scene' + (T.targetLayout === 'overlay' ? ' overlay-mode' : '');
+  if (T.targetLayout === 'overlay') {
+    const availW = Math.min(window.innerWidth - 32, 680);
+    const scaleR = Math.min(1, availW / T.targetW);
+    scene.style.width  = T.targetW + 'px';
+    scene.style.height = T.targetH + 'px';
+    scene.style.transform      = `scale(${scaleR})`;
+    scene.style.transformOrigin = 'top center';
+    // Compensate for transform not affecting layout flow
+    scene.style.marginBottom = ((T.targetH * scaleR) - T.targetH) + 'px';
+  } else {
+    scene.style.width  = '';
+    scene.style.height = '';
+    scene.style.transform      = '';
+    scene.style.transformOrigin = '';
+    scene.style.marginBottom   = '';
+  }
+  // Target SVG
+  document.getElementById('target-svg-wrap').innerHTML = T.targetHTML;
+  // Drop zone style
+  const dz = document.getElementById('drop-zone');
+  dz.setAttribute('style', T.dzStyle);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ROUND LOGIC
+═══════════════════════════════════════════════════════════ */
+function pickLetter() {
+  const pool = LETTER_POOL.filter(l => !recentLetters.includes(l.upper));
+  // Weight by miss count: letters with more misses are chosen more often
+  const weights = pool.map(l => 1 + (letterMisses[l.upper] || 0) * 2);
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let rand = Math.random() * totalWeight;
+  let chosen = pool[pool.length - 1];
+  for (let i = 0; i < pool.length; i++) {
+    rand -= weights[i];
+    if (rand <= 0) { chosen = pool[i]; break; }
+  }
+  recentLetters.push(chosen.upper);
+  if (recentLetters.length > 6) recentLetters.shift();
+  return chosen;
+}
+
+function buildRound() {
+  const T = THEMES[currentThemeIdx];
+
+  // Reuse current letter if not yet mastered; otherwise pick a new one
+  if (!currentLetterData || correctsThisLetter >= CORRECT_PER_LETTER) {
+    currentLetterData  = pickLetter();
+    correctsThisLetter = 0;
+  }
+  const letterData  = currentLetterData;
+
+  // All items in a round must be the same case
+  const useUpper = Math.random() < 0.5;
+  const correctForm = useUpper ? letterData.upper : letterData.lower;
+
+  // Filter distractors to same case only
+  const sameCaseDistractors = letterData.distractors.filter(d =>
+    useUpper ? d === d.toUpperCase() && d !== d.toLowerCase()
+             : d === d.toLowerCase() && d !== d.toUpperCase()
+  );
+  // Pad with safe fallbacks if needed
+  const upperFallbacks = ['X','Y','Z','K','V','Q','J','H','W','R','N','G'];
+  const lowerFallbacks = ['x','y','z','k','v','q','j','h','w','r','n','g'];
+  const fallbacks = useUpper ? upperFallbacks : lowerFallbacks;
+  const allUsed = new Set([correctForm, ...sameCaseDistractors]);
+  const padded = [...sameCaseDistractors];
+  for (const fb of fallbacks) {
+    if (padded.length >= 4) break;
+    if (!allUsed.has(fb)) { padded.push(fb); allUsed.add(fb); }
+  }
+
+  // Apply I/l safety rule
+  let shuffledD = padded.sort(() => Math.random() - 0.5).slice(0, 4);
+  const allLetters = [correctForm, ...shuffledD];
+  if (allLetters.includes('I') && allLetters.includes('l')) {
+    shuffledD = shuffledD.filter(d => !(d === 'I' && correctForm !== 'I') && !(d === 'l' && correctForm !== 'l'));
+    const safe = fallbacks.find(s => ![correctForm,...shuffledD].includes(s));
+    if (shuffledD.length < 4 && safe) shuffledD.push(safe);
+  }
+
+  const shuffledC = [...T.colors].sort(() => Math.random() - 0.5).slice(0, 5);
+  const items = [
+    { id:'c0', letter: correctForm,   correct: true,  ...shuffledC[0] },
+    { id:'d1', letter: shuffledD[0],  correct: false, ...shuffledC[1] },
+    { id:'d2', letter: shuffledD[1],  correct: false, ...shuffledC[2] },
+    { id:'d3', letter: shuffledD[2],  correct: false, ...shuffledC[3] },
+    { id:'d4', letter: shuffledD[3],  correct: false, ...shuffledC[4] },
+  ];
+  currentRound = { letterData, correctForm, items };
+}
+
+function startRound() {
+  buildRound();
+  const { correctForm, letterData } = currentRound;
+  const U = letterData.upper;
+  const sound = LETTER_SOUNDS[U] || '';
+  const attemptNum = correctsThisLetter + 1;
+
+  // Spotlight + sound
+  const charEl = document.getElementById('spotlight-char');
+  charEl.textContent = correctForm;
+  charEl.classList.remove('pop'); void charEl.offsetWidth; charEl.classList.add('pop');
+  document.getElementById('spotlight-sound').textContent = sound ? `sounds like ${sound}` : '';
+
+  // Progress pips
+  updateProgressPips();
+
+  // Score
+  document.getElementById('score-badge').textContent = `⭐ ${score}`;
+
+  // Speaker needs-attention glow until audio plays
+  hasHeardInstructions = false;
+  document.getElementById('speaker-btn').classList.add('needs-attention');
+
+  // Reset drop zone — round 1 clears fully; round 2 keeps placed item
+  const T2 = THEMES[currentThemeIdx];
+  const dz = document.getElementById('drop-zone');
+  if (roundsInTheme === 0) {
+    dz.innerHTML = `<span class="drop-hint" id="drop-hint">Drop here!</span>`;
+  } else {
+    // Preserve the placed item from round 1
+    if (T2.dzStyle2) {
+      // Overlay themes with moving drop zone: reparent placed item to scene first
+      const prevStacked = dz.querySelector('.stacked-item');
+      if (prevStacked) {
+        const scene = document.getElementById('target-scene');
+        const leftMatch = T2.dzStyle.match(/left:(\d+)px/);
+        const topMatch  = T2.dzStyle.match(/top:(\d+)px/);
+        prevStacked.style.left      = (leftMatch ? leftMatch[1] : '0') + 'px';
+        prevStacked.style.top       = (topMatch  ? topMatch[1]  : '0') + 'px';
+        prevStacked.style.transform = '';
+        prevStacked.style.animation = 'none';
+        scene.appendChild(prevStacked);
+      }
+      dz.setAttribute('style', T2.dzStyle2);
+    }
+    // Remove old hint and add a fresh one (without clearing stacked items)
+    const oldHint = dz.querySelector('.drop-hint');
+    if (oldHint) oldHint.remove();
+    const hint = document.createElement('span');
+    hint.className = 'drop-hint'; hint.id = 'drop-hint';
+    hint.textContent = 'Drop here!';
+    dz.appendChild(hint);
+  }
+  // Only clear has-item (and its transparent-border state) if the DZ is truly empty now
+  dz.classList.remove('drag-over');
+  if (!dz.querySelector('.stacked-item')) dz.classList.remove('has-item');
+
+  // Flash
+  const ga = document.getElementById('game-area');
+  ga.classList.remove('new-round'); void ga.offsetWidth; ga.classList.add('new-round');
+
+  renderItems();
+  setTimeout(speakInstructions, 1200);
+}
+
+function renderItems() {
+  const T   = THEMES[currentThemeIdx];
+  const row = document.getElementById('item-row');
+  row.innerHTML = '';
+  const shuffled = [...currentRound.items].sort(() => Math.random() - 0.5);
+  shuffled.forEach(item => {
+    const wrap = document.createElement('div');
+    wrap.className = 'item-wrap';
+    wrap.id = `item-${item.id}`;
+    const box = document.createElement('div');
+    box.className = 'item-svg-box';
+    box.style.width  = T.itemW + 'px';
+    box.style.height = T.itemH + 'px';
+    box.innerHTML = T.makeItemSVG(item, T.itemW, T.itemH, T.itemFs);
+    wrap.appendChild(box);
+    wrap.addEventListener('pointerdown', e => onPointerDown(e, item, wrap));
+    wrap.addEventListener('click', () => onItemTap(item, wrap));
+    row.appendChild(wrap);
+  });
+}
+
+function updateLettersStrip() {
+  const strip = document.getElementById('letters-strip');
+  if (!strip) return;
+  strip.innerHTML = '';
+  const earned = LETTER_POOL.filter(l => collectedLetters.has(l.upper));
+  if (earned.length === 0) {
+    const empty = document.createElement('span');
+    empty.className = 'strip-empty';
+    empty.textContent = 'Keep going — earn your first letter! ✨';
+    strip.appendChild(empty);
+    return;
+  }
+  const lbl = document.createElement('span');
+  lbl.className = 'strip-label';
+  lbl.textContent = '🎓 I know:';
+  strip.appendChild(lbl);
+  earned.forEach(l => {
+    const chip = document.createElement('div');
+    chip.className = 'letter-chip earned';
+    chip.textContent = l.upper;
+    strip.appendChild(chip);
+  });
+}
+
+function updateProgressPips() {
+  const pips = document.getElementById('progress-pips');
+  if (!pips) return;
+  pips.innerHTML = '';
+  for (let i = 0; i < CORRECT_PER_LETTER; i++) {
+    const pip = document.createElement('div');
+    pip.className = 'pip' + (i < correctsThisLetter ? ' filled' : '');
+    pips.appendChild(pip);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CORRECT DROP
+═══════════════════════════════════════════════════════════ */
+function correctDrop() {
+  const { item, ghost, wrap } = dragData;
+  const T = THEMES[currentThemeIdx];
+  ghost.remove();
+  wrap.classList.remove('dragging-source');
+  wrap.classList.add('matched');
+
+  const dz = document.getElementById('drop-zone');
+  dz.classList.add('has-item');
+  const stacked = document.createElement('div');
+  stacked.className = 'stacked-item';
+  const isRound2 = roundsInTheme >= 1;
+  const placeStyle = (isRound2 && T.stackedStyle2) ? T.stackedStyle2 : T.stackedStyle;
+  const placeAnim  = (isRound2 && T.stackedAnimation2) ? T.stackedAnimation2 : T.stackedAnimation;
+  stacked.style.cssText = `${placeStyle}width:${T.stackedW}px;height:${T.stackedH}px;animation:${placeAnim} 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;`;
+  stacked.innerHTML = T.makeItemSVG(item, T.stackedW, T.stackedH, T.stackedFs);
+  dz.appendChild(stacked);
+
+  showStarPop(dz);
+  score++;
+  correctsThisLetter++;
+  streak++;
+  updateStreakBadge();
+  updateProgressPips();
+
+  const badge = document.getElementById('score-badge');
+  badge.textContent = `⭐ ${score}`;
+  badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+
+  const U    = currentRound.letterData.upper;
+  const word = currentRound.letterData.words[Math.floor(Math.random() * currentRound.letterData.words.length)];
+  const phrases = T.audioPraise(U, word);
+
+  // Toast shows letter + word
+  showToast(`🎉 ${U} is for ${word.charAt(0).toUpperCase() + word.slice(1)}!`, 'correct');
+  speak(phrases[Math.floor(Math.random() * phrases.length)]);
+  // Escalate confetti: first try = 15, letter mastered = 40, every 5th letter = 70
+  const isLetterMastered = correctsThisLetter >= CORRECT_PER_LETTER;
+  const confettiCount = isLetterMastered
+    ? (collectedLetters.size % 5 === 4 ? 70 : 40)
+    : 15;
+  launchConfetti(confettiCount);
+
+  // Word flash popup
+  const emoji = WORD_EMOJI[word] || '⭐';
+  const wf = document.getElementById('word-flash');
+  document.getElementById('word-flash-emoji').textContent = emoji;
+  document.getElementById('word-flash-word').textContent = `${U} is for ${word.toUpperCase()}`;
+  wf.classList.add('show');
+  setTimeout(() => wf.classList.remove('show'), 1800);
+
+  const letterMastered = correctsThisLetter >= CORRECT_PER_LETTER;
+
+  if (letterMastered) {
+    // Mark letter as collected
+    if (!collectedLetters.has(U)) {
+      collectedLetters.add(U);
+      setTimeout(() => {
+        updateLettersStrip();
+        // Animate the newly earned chip
+        const strip = document.getElementById('letters-strip');
+        if (strip) {
+          const chips = strip.querySelectorAll('.letter-chip.earned');
+          chips.forEach(c => { if (c.textContent === U) { c.classList.add('earn-anim'); } });
+        }
+      }, 400);
+    }
+
+    roundsInTheme++;
+    if (roundsInTheme >= ROUNDS_PER_THEME) {
+      roundsInTheme = 0;
+      currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
+      setTimeout(() => showThemeBanner(), 1600);
+      setTimeout(() => { applyTheme(); startRound(); }, 3400);
+    } else {
+      setTimeout(startRound, 2600);
+    }
+  } else {
+    // Same letter, new distractors — shorter delay since they just saw it
+    setTimeout(startRound, 2000);
+  }
+}
+
+function showThemeBanner() {
+  const T    = THEMES[currentThemeIdx];
+  const banner = document.getElementById('theme-banner');
+  document.getElementById('theme-banner-text').textContent = `${T.icon} Next up: ${T.title}!`;
+  banner.classList.add('show');
+  setTimeout(() => banner.classList.remove('show'), 2200);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WRONG DROP
+═══════════════════════════════════════════════════════════ */
+function wrongDrop() {
+  const { item, ghost, wrap, isTap } = dragData;
+  const U   = currentRound.letterData.upper;
+  const CF  = currentRound.correctForm;
+  const sound = LETTER_SOUNDS[U] || '';
+  const exWord = currentRound.letterData.words[0];
+
+  letterMisses[U] = (letterMisses[U] || 0) + 1;
+  streak = 0;
+  updateStreakBadge();
+
+  showToast(`Not that one — keep looking!`, 'wrong');
+  const tryAgain = ['Hmm, not that one — try again!', 'Oops! Keep looking!', 'Not quite — give it another try!', 'Nope, keep searching!'];
+  speak(tryAgain[Math.floor(Math.random() * tryAgain.length)]);
+
+  if (isTap) {
+    // Tap mode: shake the wrap in place, no ghost
+    if (wrap) {
+      wrap.classList.add('tap-wrong');
+      setTimeout(() => wrap.classList.remove('tap-wrong'), 600);
+    }
+  } else {
+    // Drag mode: ghost shake then fade
+    if (ghost && ghost.classList) ghost.classList.add('ghost-wrong');
+    setTimeout(() => {
+      if (ghost && ghost.style) {
+        ghost.style.transition = 'opacity 0.3s, transform 0.3s';
+        ghost.style.opacity = '0';
+        ghost.style.transform = 'scale(0.5)';
+      }
+      setTimeout(() => {
+        if (ghost && ghost.remove) ghost.remove();
+        if (wrap) wrap.classList.remove('dragging-source');
+      }, 320);
+    }, 520);
+  }
+}
+
+function returnGhost() {
+  const { ghost, wrap } = dragData;
+  ghost.style.transition = 'opacity 0.25s, transform 0.25s';
+  ghost.style.opacity = '0'; ghost.style.transform = 'scale(0.7)';
+  setTimeout(() => { ghost.remove(); wrap.classList.remove('dragging-source'); }, 260);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DRAG (Pointer Events)
+═══════════════════════════════════════════════════════════ */
+function onPointerDown(e, item, wrap) {
+  if (isDragging || wrap.classList.contains('matched')) return;
+  e.preventDefault();
+  // Clear any tap selection
+  if (selectedItem) {
+    const prev = document.getElementById(`item-${selectedItem.id}`);
+    if (prev) prev.classList.remove('selected');
+    selectedItem = null;
+  }
+  const T = THEMES[currentThemeIdx];
+  // Calculate offset from actual touch point within the item
+  const rect = wrap.getBoundingClientRect();
+  const offsetX = Math.min(Math.max(e.clientX - rect.left, 10), rect.width  - 10);
+  const offsetY = Math.min(Math.max(e.clientY - rect.top,  10), rect.height - 10);
+  const ghost = document.createElement('div');
+  ghost.className = 'drag-ghost';
+  ghost.style.width  = T.itemW + 'px';
+  ghost.style.height = T.itemH + 'px';
+  ghost.innerHTML = `<svg width="${T.itemW}" height="${T.itemH}">${T.makeItemSVG(item,T.itemW,T.itemH,T.itemFs).match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1]}</svg>`;
+  ghost.style.left = (e.clientX - offsetX) + 'px';
+  ghost.style.top  = (e.clientY - offsetY) + 'px';
+  document.body.appendChild(ghost);
+  wrap.classList.add('dragging-source');
+  isDragging = true;
+  dragData   = { item, ghost, wrap, offsetX, offsetY };
+  document.addEventListener('pointermove', onPointerMove);
+  document.addEventListener('pointerup',   onPointerUp);
+}
+
+function onPointerMove(e) {
+  if (!dragData) return;
+  e.preventDefault();
+  dragData.ghost.style.left = (e.clientX - dragData.offsetX) + 'px';
+  dragData.ghost.style.top  = (e.clientY - dragData.offsetY) + 'px';
+  const dz = document.getElementById('drop-zone');
+  dz.classList.toggle('drag-over', isOverEl(e.clientX, e.clientY, dz));
+}
+
+function onPointerUp(e) {
+  document.removeEventListener('pointermove', onPointerMove);
+  document.removeEventListener('pointerup',   onPointerUp);
+  if (!dragData) return;
+  const dz   = document.getElementById('drop-zone');
+  const over = isOverEl(e.clientX, e.clientY, dz) ||
+               isOverEl(e.clientX, e.clientY, document.getElementById('target-svg-wrap'));
+  dz.classList.remove('drag-over');
+  if (over && dragData.item.correct)       correctDrop();
+  else if (over && !dragData.item.correct) wrongDrop();
+  else returnGhost();
+  isDragging = false;
+  dragData   = null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════════════════════ */
+function isOverEl(x, y, el) {
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+
+function showStarPop(nearEl) {
+  const rect = nearEl.getBoundingClientRect();
+  const star = document.createElement('div');
+  star.className = 'star-pop';
+  star.textContent = ['⭐','🌟','✨','💫','🎉'][Math.floor(Math.random()*5)];
+  star.style.left = (rect.left + rect.width/2 - 20) + 'px';
+  star.style.top  = rect.top + 'px';
+  document.body.appendChild(star);
+  setTimeout(() => star.remove(), 950);
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  if (toastTimer) clearTimeout(toastTimer);
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function launchConfetti(count = 30) {
+  const cols = ['#FC6D6D','#F5A623','#5CBABA','#A178C9','#82D1A8','#FF8FAB','#FBD76A'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti';
+    p.style.cssText = `left:${Math.random()*100}vw;top:-20px;width:${8+Math.random()*10}px;height:${8+Math.random()*10}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.6+Math.random()*2.2}s;animation-delay:${Math.random()*.8}s;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 5000);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SPEECH — ElevenLabs TTS + Web Speech fallback
+═══════════════════════════════════════════════════════════ */
+const EL_API_KEY  = 'sk_cf424f3adaa40a8a91541bfdcfdc2cd97ebd9a59575f0869';
+const EL_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel
+const EL_MODEL    = 'eleven_turbo_v2_5';
+const EL_ENABLED  = true;
+const _audioCache = new Map();
+let   _currentAudio = null;
+
+async function speak(text) {
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio = null; }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  const btn = document.getElementById('speaker-btn');
+  btn.classList.add('speaking');
+  const done = () => btn.classList.remove('speaking');
+  if (!EL_ENABLED) { speakFallback(text, done); return; }
+  try {
+    let blobUrl = _audioCache.get(text);
+    if (!blobUrl) {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE_ID}`, {
+        method: 'POST',
+        headers: { 'xi-api-key': EL_API_KEY, 'Content-Type': 'application/json', 'Accept': 'audio/mpeg' },
+        body: JSON.stringify({ text, model_id: EL_MODEL, voice_settings: { stability:0.68, similarity_boost:0.82, style:0.30, use_speaker_boost:true, speed:0.85 } }),
+      });
+      if (!res.ok) throw new Error(`EL ${res.status}`);
+      const blob = await res.blob();
+      blobUrl = URL.createObjectURL(blob);
+      _audioCache.set(text, blobUrl);
+    }
+    const audio = new Audio(blobUrl);
+    _currentAudio = audio;
+    audio.onended = audio.onerror = done;
+    audio.play();
+  } catch (err) {
+    console.warn('ElevenLabs fallback:', err.message);
+    speakFallback(text, done);
+  }
+}
+
+let _voice = null;
+function initVoice() {
+  const pick = () => {
+    const vs = window.speechSynthesis?.getVoices().filter(v => v.lang.startsWith('en')) || [];
+    if (!vs.length) return false;
+    for (const name of ['Google US English','Samantha','Karen','Microsoft Aria Online (Natural) - English (United States)']) {
+      const v = vs.find(v => v.name === name);
+      if (v) { _voice = v; return true; }
+    }
+    _voice = vs[0]; return true;
+  };
+  if (!pick() && 'speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = pick;
+}
+
+function speakFallback(text, onDone) {
+  if (!('speechSynthesis' in window)) { if (onDone) onDone(); return; }
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US'; utt.rate = 0.72; utt.pitch = 1.0; utt.volume = 1;
+  if (_voice) utt.voice = _voice;
+  if (onDone) { utt.onend = utt.onerror = onDone; }
+  window.speechSynthesis.speak(utt);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TAP-TO-SELECT
+═══════════════════════════════════════════════════════════ */
+function onItemTap(item, wrap) {
+  if (isDragging) return;
+  if (wrap.classList.contains('matched')) return;
+  if (document.getElementById('letter-hint-overlay').classList.contains('show')) return;
+
+  // Toggle deselect
+  if (selectedItem && selectedItem.id === item.id) {
+    wrap.classList.remove('selected');
+    selectedItem = null;
+    return;
+  }
+  // Deselect previous
+  if (selectedItem) {
+    const prev = document.getElementById(`item-${selectedItem.id}`);
+    if (prev) prev.classList.remove('selected');
+  }
+  selectedItem = item;
+  wrap.classList.add('selected');
+}
+
+function onDropZoneTap() {
+  if (!selectedItem || isDragging) return;
+  const item = selectedItem;
+  const wrap = document.getElementById(`item-${item.id}`);
+  // Clear selection
+  selectedItem = null;
+  if (wrap) wrap.classList.remove('selected');
+  // Fake drag data with no ghost
+  dragData = { item, ghost: { remove:()=>{}, classList:{add:()=>{},remove:()=>{}}, style:{} }, wrap, isTap: true };
+  if (item.correct) {
+    correctDrop();
+  } else {
+    wrongDrop();
+  }
+  isDragging = false;
+  dragData   = null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STREAK
+═══════════════════════════════════════════════════════════ */
+function updateStreakBadge() {
+  const badge = document.getElementById('streak-badge');
+  const countEl = document.getElementById('streak-count');
+  if (!badge || !countEl) return;
+  if (streak >= 3) {
+    countEl.textContent = streak;
+    badge.style.display = 'block';
+    badge.style.animation = 'none'; void badge.offsetWidth; badge.style.animation = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function speakInstructions() {
+  const T = THEMES[currentThemeIdx];
+  speak(T.audioIntro(currentRound.letterData.upper));
+  // Remove needs-attention glow once heard
+  hasHeardInstructions = true;
+  document.getElementById('speaker-btn').classList.remove('needs-attention');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  // Wire up all event listeners once the full DOM (including post-script elements) exists
+  document.getElementById('speaker-btn').addEventListener('click', speakInstructions);
+  document.getElementById('drop-zone').addEventListener('click', onDropZoneTap);
+  document.getElementById('hint-dismiss-btn').addEventListener('click', () => {
+    const overlay = document.getElementById('letter-hint-overlay');
+    overlay.classList.remove('show');
+    if (hintDismissTimer) { clearTimeout(hintDismissTimer); hintDismissTimer = null; }
+  });
+  initVoice();
+  applyTheme();
+  updateLettersStrip();
+  startRound();
+});
+</script>
+<!-- WORD FLASH -->
+<div class="word-flash" id="word-flash">
+  <span class="word-flash-emoji" id="word-flash-emoji">🌟</span>
+  <span class="word-flash-word" id="word-flash-word">apple</span>
+</div>
+
+<!-- LETTER HINT OVERLAY (wrong answer scaffold) -->
+<div class="letter-hint-overlay" id="letter-hint-overlay">
+  <div class="letter-hint-card">
+    <div class="letter-hint-label">👀 Look for this letter</div>
+    <div class="letter-hint-big" id="letter-hint-big">A</div>
+    <div class="letter-hint-sound" id="letter-hint-sound">It sounds like /a/ in "apple"</div>
+    <button class="hint-dismiss-btn" id="hint-dismiss-btn">Got it! 👍</button>
+  </div>
+</div>
+
+<!-- STREAK BADGE -->
+<div class="streak-badge" id="streak-badge" style="display:none">🔥 <span id="streak-count">3</span></div>
+
+</body>
+</html>
